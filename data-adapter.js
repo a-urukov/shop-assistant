@@ -13,10 +13,10 @@ var USER_ID = 42,
  */
 function DataAdapter() {
     this._options = {
-        host: 'ylibashki.ru',
-        user: 'ylibashki',
-        password: 'AS3jAdj7asd&ASd2Dsac@Ds',
-        database: 'ylibashki.ru'
+        host: '',
+        user: '',
+        password: '',
+        database: ''
     };
     this._metrics = new TimeMetrics();
     this.hardcodePrices = '92102,94395,92001,94580,94746,90606,94401,93134,93132,93830,93327,91667,91667,94456,91526,94161,93540,92640,91881,91901,89400';
