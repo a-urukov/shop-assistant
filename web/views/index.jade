@@ -1,0 +1,22 @@
+extends layout
+
+block content
+    div(class='hero-unit')
+        h1='Анализ ассотимента «Улыбашки»'
+        p='Дата последнего обовления 23.03.12'
+        p
+            a(class='btn btn-primary btn-large', href='#progressDlg', role='button', data-toggle='modal')='Обновить'
+
+        div(class='modal hide fade', id='progressDlg', tabindex='-1', role='dialog', data-backdrop='static', aria-labelledby='myModalLabel')
+            div(class='modal-header')
+                h3(id='myModalLabel')='Загрузка данных от поставщика'
+
+            div(class='modal-body')
+                div(class='progress progress-striped active')
+                    div(class='bar', style='width: 40%;')
+                span(class='label label-info pull-left')='Общее время: 3:30'
+                span(class='label label-success pull-right')='1 из 1040 операций выполнено – 40%'
+
+
+            div(class='modal-footer')
+                button(id='dlg-btn', class='btn btn-primary', data-loading-text='Loading...')='OK'
