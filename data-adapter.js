@@ -13,10 +13,10 @@ var USER_ID = 42,
  */
 function DataAdapter() {
     this._options = {
-        host: '',
-        user: '',
-        password: '',
-        database: ''
+        host: 'ylibashki.ru',
+        user: 'ylibashki',
+        password: 'jk98D(3nASd7akjdA&',
+        database: 'ylibashki.ru'
     };
     this._metrics = new TimeMetrics();
     this.hardcodePrices = '92102,94395,92001,94580,94746,90606,94401,93134,93132,93830,93327,91667,91667,94456,91526,94161,93540,92640,91881,91901,89400';
@@ -397,17 +397,21 @@ DataAdapter.prototype._addAuxPhoto = function(auxPhotos, callback) {
 }
 
 DataAdapter.prototype.openConnection = function(callback) {
-    if (this.isOpen) { callback && callback(); return; }
+    //if (this.isOpen) { callback && callback(null); return; }
 
     var _this = this,
         cn = mysql.createConnection(this._options);
 
-    cn.connect(function(err){
-        err && console.log(err);
+    cn.connect(function(err) {
+        if (err){
+            callback(err, null);
+            return;
+        }
+
         _this.isOpen = true;
         console.log('---------------------------');
         console.log('Соединение с БД установлено');
-        callback && callback(cn);
+        callback && callback(null, cn);
     });
 }
 
@@ -498,41 +502,71 @@ DataAdapter.prototype.addAuxPhotos = function(auxPhotos, callback) {
 }
 
 DataAdapter.prototype.getAllProducts = function(cn, callback) {
-    var _this = this;
-    var m = new TimeMetrics();
 
     console.log('Получение перечня товаров из базы');
 
+    cn.query(
+        'SELECT products.virtuemart_product_id, product_sku, published, products.created_on, prices.product_price, ' +
+        'names.product_name,  names.product_s_desc,  names.product_desc FROM orig_virtuemart_products products ' +
+        'JOIN orig_virtuemart_product_prices prices ON products.virtuemart_product_id = prices.virtuemart_product_id ' +
+        'JOIN orig_virtuemart_products_en_gb names ON products.virtuemart_product_id = names.virtuemart_product_id',
 
-        cn.query(
-            'SELECT product_sku, published, products.created_on, prices.product_price, ' +
-            'names.product_name,  names.product_s_desc,  names.product_desc FROM orig_virtuemart_products products ' +
-            'JOIN orig_virtuemart_product_prices prices ON products.virtuemart_product_id = prices.virtuemart_product_id ' +
-            'JOIN orig_virtuemart_products_en_gb names ON products.virtuemart_product_id = names.virtuemart_product_id',
+        function(err, res) {
 
-            function(err, res) {
-
-                if (err) {
-                    callback(err);
-                    return;
-                }
-
-
-                callback(null, res.map(function(v){
-                    return {
-                        name: v.product_name,
-                        price: v.product_price,
-                        article: v.product_sku,
-                        description: v.product_desc,
-                        smallDescription: v.product_s_desc,
-                        published: !!v.published,
-                        createdOn: v.created_on
-                    }
-                }));
-
-                m.writeTime();
+            if (err) {
+                callback(err);
+                return;
             }
-        );
+
+            callback(null, res.map(function(v){
+                return {
+                    id: v.virtuemart_product_id,
+                    name: v.product_name,
+                    price: v.product_price,
+                    article: v.product_sku,
+                    description: v.product_desc,
+                    smallDescription: v.product_s_desc,
+                    available: !!v.published,
+                    createdOn: v.created_on
+                }
+            }));
+        }
+    );
+}
+
+DataAdapter.prototype.caps = function() {
+    var _this = this,
+        reg = /[А-Я,A-Z]{2,}/g,
+        c;
+
+    console.log('Обновление перечня товаров из базы');
+
+    this.openConnection(function(cn) {
+        _this.getAllProducts(cn, function(err, products) {
+
+            utils.sync(products, {
+                method: function(product, callback) {
+                    var name = product.name;
+
+                    while (c = reg.exec(name)) {
+                        c = c[0];
+                        name = name.replace(c, c[0].toUpperCase() + c.substr(1).toLowerCase());
+                    }
+
+                    cn.query(
+                        'UPDATE orig_virtuemart_products_en_gb SET product_name = ? WHERE virtuemart_product_id = ?',
+                        [name, product.id],
+                        function(err, res) { callback(err) }
+                    )
+                },
+                verbose: true,
+                ctx: _this,
+                callback: function() {
+                    _this.closeConnection(cn);
+                }
+            });
+        });
+    });
 }
 
 exports.DataAdapter = DataAdapter;

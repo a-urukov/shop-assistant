@@ -1,3 +1,6 @@
+var libxmljs = require('libxmljs'),
+    Iconv = require('iconv').Iconv;
+
 /**
  * Работа с каталогом
  * @constructor
@@ -39,7 +42,7 @@ Contractor.prototype.downloadPriceList = function(callback) {
  */
 Contractor.prototype._getXml = function(callback) {
     var xmlData = '',
-        converter = new Iconv('windows-1251', 'utf8'),
+        converter = new Iconv('windows-1251', 'utf-8'),
         req = http.request(this._requestOptions, function(res) {
 
             res.setEncoding('binary');
@@ -61,7 +64,8 @@ Contractor.prototype._getXml = function(callback) {
  * @private
  */
 Contractor.prototype._parseXml = function(xml, callback) {
-    var xmlDoc = libxmljs.parseXml(xml);
+
+    var xmlDoc = libxmljs.parseXml(xml.replace('windows-1251', 'utf-8'));
 
     callback(xmlDoc.get('//offers').find('offer').map(function(offer) {
         return {
@@ -69,9 +73,9 @@ Contractor.prototype._parseXml = function(xml, callback) {
             price: offer.get('price').text(),
             article: offer.get('article').text(),
             description: offer.get('description').text(),
-            published: offer.attr('available').value() == 'true'
+            available: offer.attr('available') && offer.attr('available').value() == 'true'
         };
     }));
 }
 
-exports.Downloader = Contractor;
+exports.Contractor = Contractor;
