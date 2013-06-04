@@ -1,8 +1,8 @@
 /**
- * Загрузка прайс-листа с удаленного сервера
+ * Работа с каталогом
  * @constructor
  */
-function CatalogDownloader() {
+function Contractor() {
     this._metrics = new TimeMetrics();
     this._requestOptions = {
         host: 'www.suvenirow.ru',
@@ -13,39 +13,42 @@ function CatalogDownloader() {
 }
 
 /**
- * Загрузка прайс листа (пробрасывается в виде JSON в callback)
+ * Загрузка прайс листа
  * @param callback
  */
-CatalogDownloader.prototype.download = function(callback) {
+Contractor.prototype.downloadPriceList = function(callback) {
     console.log('Start request data from remote host');
     var _this = this;
 
-    this._getXml(function(xml) {
+    this._getXml(function(error, xml) {
+
+        if (error) callback(error, null);
+
         _this._metrics.writeTimeMark('Xml data received', true);
         _this._parseXml(xml, function(data) {
             _this._metrics.writeTimeMark('Parsing xml data finished');
-            callback(data);
+            callback(null, data);
         });
     });
 }
 
 /**
- * Получение данных в виде XML с удаленного сервера
+ * Получение данных в виде XML с удаленного сервера поставщика
  * @param callback
  * @private
  */
-CatalogDownloader.prototype._getXml = function(callback) {
+Contractor.prototype._getXml = function(callback) {
     var xmlData = '',
         converter = new Iconv('windows-1251', 'utf8'),
         req = http.request(this._requestOptions, function(res) {
 
             res.setEncoding('binary');
 
-            res.on('data', function(chunk) { xmlData += converter.convert(new Buffer(chunk, 'binary')).toString(); });
+            res.on('data', function(chunk) { xmlData += converter.convert(new Buffer(chunk, 'binary')).toString() });
 
-            res.on('end', function() { callback(xmlData); });
+            res.on('end', function() { callback(null, xmlData) });
 
-            res.on('error', function(error) { console.log(error); });
+            res.on('error', function(error) { callback(error, null) });
         });
 
     req.end();
@@ -54,9 +57,10 @@ CatalogDownloader.prototype._getXml = function(callback) {
 /**
  * Преобразование XML в JSON
  * @param callback
+ * @param xml
  * @private
  */
-CatalogDownloader.prototype._parseXml = function(xml, callback) {
+Contractor.prototype._parseXml = function(xml, callback) {
     var xmlDoc = libxmljs.parseXml(xml);
 
     callback(xmlDoc.get('//offers').find('offer').map(function(offer) {
@@ -70,4 +74,4 @@ CatalogDownloader.prototype._parseXml = function(xml, callback) {
     }));
 }
 
-exports.Downloader = CatalogDownloader;
+exports.Downloader = Contractor;
