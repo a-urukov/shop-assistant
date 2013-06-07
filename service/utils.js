@@ -41,27 +41,27 @@ function addRowLogMessage(err, tableName) {
 
 /**
  * Вычисление цены товара
- * @param product
+ * @param price
  * @returns {number}
  */
-function getOurPrice(product) {
-    if (!product) return 0;
+function getOurPrice(price) {
+    if (!price) return 0;
 
-    var price = (isNaN(product.price) ? 0 : product.price) * FACTOR_PRICES,
+    var newPrice = (isNaN(price) ? 0 : price) * FACTOR_PRICES,
         k = [500, 1500, 3000, 5000];
 
-    for (var i = 0; k[i] < price && i < k.length; i++) {
-        price *= 0.93;
+    for (var i = 0; k[i] < newPrice && i < k.length; i++) {
+        newPrice *= 0.93;
     }
 
-    if (price > 200) {
-        var m = price % 100;
-        (m < 30) && (price -= m);
+    if (newPrice > 200) {
+        var m = newPrice % 100;
+        (m < 30) && (newPrice -= m);
     }
 
-    price && (price -= price % 10 + 1);
+    newPrice && (newPrice -= newPrice % 10 + 1);
 
-    return price;
+    return newPrice;
 }
 
 function executeMethodSync(n, items, options) {
@@ -135,11 +135,69 @@ function downloadFile(src, dest, callback) {
     req.end();
 }
 
+/**
+ * Транзакция (набор запросов выполняемых параллельно)
+ * @param queries массив запросов (может быть задано кол-во выполнений)
+ * @param callback вызывается после выполнения ВСЕХ запросов составляющих транзакцию
+ * @constructor
+ */
+function MultiQuery(queries, callback) {
+
+    var q = this._queries = {};
+
+    queries.forEach(function(v) {
+        if (typeof v === 'string') {
+            q[v] = 1;
+        } else {
+            q[v.name] = v.count;
+        }
+    });
+
+    this._callback = callback;
+}
+
+/**
+ * Функция вызывается при каждом выполнении запроса транзакции, при выполнении всех запросов вызывается callback
+ * @param err ошибка
+ * @param queryName имя выполненного запроса
+ * @public
+ */
+MultiQuery.prototype.completeQuery = function(err, queryName) {
+
+    var completed = true;
+
+    if (err) {
+        this._errors || (this._errors = []);
+        this._errors.push(err);
+    }
+    this._queries[queryName] && this._queries[queryName]--;
+
+    for (var q in this._queries) {
+        if (this._queries[q]) {
+            completed = false;
+            break;
+        }
+    }
+
+    completed && this.terminate();
+}
+
+/**
+ * Завершение транзакции
+ * @public
+ */
+MultiQuery.prototype.terminate = function() {
+    this._callback(this._errors);
+}
+
+
 exports.TimeMetrics = TimeMetrics;
+exports.MultiQuery = MultiQuery;
 
 exports.utils = {
     addRowLogMessage: addRowLogMessage,
     getOurPrice: getOurPrice,
     sync: sync,
     downloadFile: downloadFile
+
 };

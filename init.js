@@ -1,7 +1,7 @@
 var connect = require('connect'),
     express = require('express'),
     io = require('socket.io'),
-    port = (process.env.PORT || 8082);
+    port = (process.env.PORT || 8081);
 
 exports.initServer = function() {
 

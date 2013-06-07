@@ -3,7 +3,6 @@ THUMB_IMAGES_CATALOG = 'images/stories/virtuemart/product/resized/';
 
 http = require('http');
 Buffer = require('buffer').Buffer;
-mysql = require('mysql');
 TimeMetrics = require('./utils.js').TimeMetrics;
 utils = require('./utils.js').utils;
 
