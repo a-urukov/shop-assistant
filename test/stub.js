@@ -1,7 +1,12 @@
-describe('stub', function() {
+describe('controller', function() {
 
-    describe('#test', function() {
-        it('should have some units tests')
+    describe('getAllProducts', function() {
+        it('correct error', function(done) {
+
+            console.log(done);
+            done();
+        })
+
     })
 
 })

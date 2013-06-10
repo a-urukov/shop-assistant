@@ -1,3 +1,5 @@
+var utils = require('./utils.js').utils
+
 function Catalog() {
 }
 
@@ -49,7 +51,10 @@ Catalog.getNewProducts = function(products, priceList) {
         dic = getDictionaryHash(products);
 
     priceList.forEach(function(p) {
-        !dic[p.article] && res.push(p);
+        if (!dic[p.article]) {
+            p.price = utils.getOurPrice(p.price);
+            res.push(p);
+        }
     });
 
     return res;

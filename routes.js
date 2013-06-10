@@ -1,4 +1,5 @@
-exports.setRoutes = function(server) {
+exports.setRoutes = function(server, controller) {
+
     server.get('/', function(req, res) {
         res.render('index.jade', {
             locals: {
@@ -7,6 +8,26 @@ exports.setRoutes = function(server) {
                 author: 'Your Name',
                 analyticssiteid: 'XXXXXXX'
             }
+        });
+    });
+
+    server.get('/all-products', function(req, res) {
+        controller.getAllProducts(function(err, response) { res.send(response) });
+    });
+
+    server.get('/new-products', function(req, res) {
+        controller.getNewProducts(function(err, response) { res.send(response) });
+    });
+
+    server.get('/available-products', function(req, res) {
+        controller.getAvailableProducts(function(err, response) {
+            res.send(response)
+        });
+    });
+
+    server.get('/missing-products', function(req, res) {
+        controller.getMissingProducts(function(err, response) {
+            res.send(response)
         });
     });
 

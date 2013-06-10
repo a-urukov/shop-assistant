@@ -136,6 +136,21 @@ function downloadFile(src, dest, callback) {
 }
 
 /**
+ * Представление товара в форамате строки компонента DataRow
+ * @param product
+ * @returns {Array}
+ */
+function productToDataTable(product) {
+    return [
+        product.article,
+        product.name,
+        product.price,
+        product.description ? product.description.substr(0, 300) + '...' : 'отсутствует',
+        product.available ? '+' : '-'
+    ];
+}
+
+/**
  * Транзакция (набор запросов выполняемых параллельно)
  * @param queries массив запросов (может быть задано кол-во выполнений)
  * @param callback вызывается после выполнения ВСЕХ запросов составляющих транзакцию
@@ -198,6 +213,6 @@ exports.utils = {
     addRowLogMessage: addRowLogMessage,
     getOurPrice: getOurPrice,
     sync: sync,
-    downloadFile: downloadFile
-
+    downloadFile: downloadFile,
+    productToDataTable: productToDataTable
 };

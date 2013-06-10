@@ -34,7 +34,11 @@ function disposeConnect(cn, callback) {
 function DataAdapter(options) {
     var pool = mysql.createPool(options);
 
-    this.getConnection = pool.getConnection.bind(pool);
+    this.getConnection = function(callback) {
+        pool.getConnection(function(er, cn) {
+            callback(er || !cn && 'Нет соединения с сервером', cn);
+        });
+    }
 }
 
 /**
@@ -66,7 +70,7 @@ DataAdapter.prototype.getAllProducts = function(callback) {
                         article: v.product_sku,
                         description: v.product_desc,
                         smallDescription: v.product_s_desc,
-                        available: !!v.published && v.product_in_stock > 100,
+                        available: !!v.published && +v.product_in_stock > 0,
                         createdOn: v.created_on
                     }
                 }));
@@ -76,12 +80,47 @@ DataAdapter.prototype.getAllProducts = function(callback) {
 }
 
 /**
+ * Возвращает id товара (метод с возможностью сохранения connection)
+ * @param article
+ * @param callback
+ * @param [needCn]
+ * @private
+ */
+DataAdapter.prototype._getProductId = function(article, callback, needCn) {
+   this.getConnection(function(err, cn) {
+       cn.query('SELECT virtuemart_product_id FROM orig_virtuemart_products WHERE product_sku = ?', [article], function(err, res) {
+
+           if (err) {
+               callback(err);
+               cn.end();
+
+               return;
+           }
+
+           needCn || cn.end();
+
+           var productId = res[0] && res[0].virtuemart_product_id;
+
+           callback(null, productId, needCn && cn);
+       });
+   });
+}
+
+/**
  * Добавление продукта в каталог virtueMart
  * @param product
  * @param callback
  */
 DataAdapter.prototype.insertProduct = function(product, callback) {
-    this.getConnection(function(err, cn) {
+    this._getProductId(product.article, function(err, productId, cn) {
+
+        !err && productId && (err = 'Данный артикул уже существет');
+        if (err) {
+            callback(err);
+            cn && cn.end();
+
+            return;
+        }
 
         var multiQuery = new MultiQuery(PRODUCT_TABLES, disposeConnect(cn, callback)),
             price = utils.getOurPrice(product.price),
@@ -135,7 +174,9 @@ DataAdapter.prototype.insertProduct = function(product, callback) {
             cn.query('INSERT INTO orig_virtuemart_product_manufacturers SET ?', {
                 virtuemart_manufacturer_id: MANUFACTURER_ID,
                 virtuemart_product_id: productId
-            }, function(err) { multiQuery.completeQuery(err, 'orig_virtuemart_product_manufacturers') });
+            }, function(err) {
+                multiQuery.completeQuery(err, 'orig_virtuemart_product_manufacturers')
+            });
 
             cn.query('INSERT INTO orig_virtuemart_products_en_gb SET ?', {
                 virtuemart_product_id: productId,
@@ -146,13 +187,17 @@ DataAdapter.prototype.insertProduct = function(product, callback) {
                 metakey: '',
                 customtitle: '',
                 slug: productId
-            }, function(err) { multiQuery.completeQuery(err, 'orig_virtuemart_products_en_gb') });
+            }, function(err) {
+                multiQuery.completeQuery(err, 'orig_virtuemart_products_en_gb')
+            });
 
             cn.query('INSERT INTO orig_virtuemart_product_categories SET ?', {
                 virtuemart_product_id: productId,
                 virtuemart_category_id: CATEGORY_ID,
                 ordering: 1
-            }, function(err) { multiQuery.completeQuery(err, 'orig_virtuemart_product_categories') });
+            }, function(err) {
+                multiQuery.completeQuery(err, 'orig_virtuemart_product_categories')
+            });
 
             cn.query('INSERT INTO orig_virtuemart_product_prices SET ?', {
                 virtuemart_product_id: productId,
@@ -161,7 +206,9 @@ DataAdapter.prototype.insertProduct = function(product, callback) {
                 product_currency: PRODUCT_CURRENCY,
                 created_on: date,
                 created_by: USER_ID
-            }, function(err) { multiQuery.completeQuery(err, 'orig_virtuemart_product_prices') });
+            }, function(err) {
+                multiQuery.completeQuery(err, 'orig_virtuemart_product_prices')
+            });
 
             cn.query('INSERT INTO orig_virtuemart_medias SET ?', tbMediasParams, function(err, res1) {
                 multiQuery.completeQuery(err, 'orig_virtuemart_medias');
@@ -173,13 +220,14 @@ DataAdapter.prototype.insertProduct = function(product, callback) {
                         virtuemart_product_id: productId,
                         virtuemart_media_id: res1.insertId,
                         ordering: 1
-                    }, function(err) { multiQuery.completeQuery(err, 'orig_virtuemart_product_medias') });
+                    }, function(err) {
+                        multiQuery.completeQuery(err, 'orig_virtuemart_product_medias')
+                    });
                 }
             });
         });
-    });
+    }, true);
 }
-
 
 /**
  * Обновление наличия
@@ -189,10 +237,12 @@ DataAdapter.prototype.insertProduct = function(product, callback) {
  */
 DataAdapter.prototype.updateAvailability = function(article, available, callback) {
     this.getConnection(function(err, cn) {
-        cn.query('UPDATE orig_virtuemart_products SET product_in_stock = ?  WHERE product_sku = ?', [available ? 100 : 0, article], function(err) {
-            cn.end();
-            callback(err);
-        });
+
+        cn.query('UPDATE orig_virtuemart_products SET product_in_stock = ?  WHERE product_sku = ?',
+            [available ? 100 : 0, article], function(err) {
+                cn.end();
+                callback(err);
+            });
     });
 }
 
@@ -206,25 +256,26 @@ DataAdapter.prototype.updatePrice = function(article, contractorPrice, callback)
 
     if (HARDCODE_PRICES.indexOf(article) != -1) {
         callback();
+
         return;
     }
 
-    this.getConnection(function(err, cn) {
-        cn.query('SELECT virtuemart_product_id FROM orig_virtuemart_products WHERE product_sku = ?', [article], function(err, res) {
-            var productId = res[0] && res[0].virtuemart_product_id;
+    this._getProductId(article, function(err, productId, cn) {
 
-            if (err || !productId) {
+        !err && !productId && (err = 'Нет товара с заданным артикулом');
+        if (err) {
+            callback(err);
+            cn && cn.end();
+
+            return;
+        }
+
+        cn.query('UPDATE orig_virtuemart_product_prices SET product_price = ?  WHERE virtuemart_product_id = ?',
+            [utils.getOurPrice(contractorPrice), productId], function(err) {
+                cn.end();
                 callback(err);
-                return;
-            }
-
-            cn.query('UPDATE orig_virtuemart_product_prices SET product_price = ?  WHERE virtuemart_product_id = ?',
-                [utils.getOurPrice(contractorPrice), productId], function(err) {
-                    callback(err);
-                });
-
-        });
-    });
+            });
+    }, true);
 }
 
 /**
@@ -232,56 +283,52 @@ DataAdapter.prototype.updatePrice = function(article, contractorPrice, callback)
  * @param product
  * @param callback
  */
-//TODO Удалять все изображения Переписать!
+//TODO Удалять все изображения
 DataAdapter.prototype._deleteProduct = function(product, callback) {
 
-    if (this._multiQueryFlags || !this.isOpen) return;
+    this._getProductId(article, function(err, productId, cn) {
 
-    console.log('---\nУдаление продукта с артикулом: %s\n---', product.article);
+        !err && !productId && (err = 'Нет товара с заданным артикулом');
+        if (err) {
+            callback(err);
+            cn && cn.end();
 
-    if (!product.article) { callback && callback('Артикул не задан'); return; }
-
-    this._startNewMultiQuery(PRODUCT_TABLES, callback);
-
-    var _this = this;
-    cn.query('SELECT virtuemart_product_id FROM orig_virtuemart_products WHERE product_sku = ?', [product.article], function(err, res) {
-        var productId = res[0] && res[0].virtuemart_product_id;
-
-        if (!productId) {
-            callback && callback('Артикул ' + product.article + ' отсутствует в базе');
-            _this._terminateMultiQuery();
             return;
         }
 
-        _cn.query('SELECT virtuemart_media_id FROM orig_virtuemart_product_medias WHERE virtuemart_product_id = ?', [productId], function(err, res) {
+        var multiQuery = new MultiQuery(PRODUCT_TABLES, disposeConnect(cn, callback));
+        multiQuery.completeQuery(err, 'orig_virtuemart_products')
+
+
+        cn.query('SELECT virtuemart_media_id FROM orig_virtuemart_product_medias WHERE virtuemart_product_id = ?', [productId], function(err, res) {
             var mediaId = res[0] && res[0].virtuemart_media_id;
 
-            _cn.query('DELETE FROM orig_virtuemart_product_medias WHERE virtuemart_product_id = ?', [productId], function(err) {
+            cn.query('DELETE FROM orig_virtuemart_product_medias WHERE virtuemart_product_id = ?', [productId], function(err) {
                 _this._onQueryComplete(err, 'orig_virtuemart_product_medias');
 
-                mediaId && _cn.query('DELETE FROM orig_virtuemart_medias WHERE virtuemart_media_id = ?', [mediaId], function(err) {
+                mediaId && cn.query('DELETE FROM orig_virtuemart_medias WHERE virtuemart_media_id = ?', [mediaId], function(err) {
                     _this._onQueryComplete(err, 'orig_virtuemart_medias');
                 });
             });
         });
 
-        _cn.query('DELETE FROM orig_virtuemart_products_en_gb WHERE virtuemart_product_id = ?', [productId], function(err) {
+        cn.query('DELETE FROM orig_virtuemart_products_en_gb WHERE virtuemart_product_id = ?', [productId], function(err) {
             _this._onQueryComplete(err, 'orig_virtuemart_products_en_gb');
         });
 
-        _cn.query('DELETE FROM orig_virtuemart_product_manufacturers WHERE virtuemart_product_id = ?', [productId], function(err) {
+        cn.query('DELETE FROM orig_virtuemart_product_manufacturers WHERE virtuemart_product_id = ?', [productId], function(err) {
             _this._onQueryComplete(err, 'orig_virtuemart_product_manufacturers');
         });
 
-        _cn.query('DELETE FROM orig_virtuemart_product_categories WHERE virtuemart_product_id = ?', [productId], function(err) {
+        cn.query('DELETE FROM orig_virtuemart_product_categories WHERE virtuemart_product_id = ?', [productId], function(err) {
             _this._onQueryComplete(err, 'orig_virtuemart_product_categories');
         });
 
-        _cn.query('DELETE FROM orig_virtuemart_product_prices WHERE virtuemart_product_id = ?', [productId], function(err) {
+        cn.query('DELETE FROM orig_virtuemart_product_prices WHERE virtuemart_product_id = ?', [productId], function(err) {
             _this._onQueryComplete(err, 'orig_virtuemart_product_prices');
         });
 
-        _cn.query('DELETE FROM orig_virtuemart_products WHERE virtuemart_product_id = ?', [productId], function(err) {
+        cn.query('DELETE FROM orig_virtuemart_products WHERE virtuemart_product_id = ?', [productId], function(err) {
             _this._onQueryComplete(err, 'orig_virtuemart_products');
         });
     });

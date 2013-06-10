@@ -95,7 +95,9 @@ textarea {
 
 
 
-
+li {
+    list-style-image: none;
+}
 
 
 

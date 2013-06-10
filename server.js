@@ -6,15 +6,14 @@ var init = require('./init.js'),
         database: 'ylibashki.ru'
     }),
     server = init.initServer(),
+    contractor = new (require('./service/contractor.js').Contractor)(),
+    controller = new (require('./controller').Controller)(dataAdapter, contractor),
     io = init.initSocketIO();
 
-
-dataAdapter.getAllProducts(function(err, products) { console.log(products.length) });
-
-require('./routes.js').setRoutes(server);
+require('./routes.js').setRoutes(server, controller);
 require('./socket.js').initSocket(io);
 
-
+//TODO выводить категорию в таблицу
 
 
 

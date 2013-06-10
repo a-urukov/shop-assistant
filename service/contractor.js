@@ -1,12 +1,13 @@
 var libxmljs = require('libxmljs'),
-    Iconv = require('iconv').Iconv;
+    Iconv = require('iconv').Iconv,
+    http = require('http'),
+    Buffer = require('buffer').Buffer;
 
 /**
  * Работа с каталогом
  * @constructor
  */
 function Contractor() {
-    this._metrics = new TimeMetrics();
     this._requestOptions = {
         host: 'www.suvenirow.ru',
         port: 80,
@@ -20,16 +21,13 @@ function Contractor() {
  * @param callback
  */
 Contractor.prototype.downloadPriceList = function(callback) {
-    console.log('Start request data from remote host');
     var _this = this;
 
     this._getXml(function(error, xml) {
 
         if (error) callback(error, null);
 
-        _this._metrics.writeTimeMark('Xml data received', true);
         _this._parseXml(xml, function(data) {
-            _this._metrics.writeTimeMark('Parsing xml data finished');
             callback(null, data);
         });
     });
