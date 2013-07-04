@@ -1,0 +1,88 @@
+function Cache() {
+
+}
+
+/**
+ * Регитсрация ключа в кэше
+ * @param key
+ * @param getFunction Функция получения данных (опционально может принимать id)
+ * @param ctx контекст выполнения функции получения данных
+ */
+Cache.prototype.register = function(key, getFunction, ctx) {
+    var value;
+
+    this[key] = {
+
+        /**
+         * Получение данных из кэша
+         * @param [id] Необязяательный параметр для коллекций
+         * @param callback
+         */
+        get: function(id, callback) {
+            var v;
+
+            if (arguments.length == 1) {
+                callback = id;
+                v = value;
+            } else {
+                v = value[id];
+            }
+
+            if (v) {
+                callback(null, v);
+            } else {
+                this.update.apply(this, arguments);
+            }
+        },
+
+        /**
+         * Обновление данных в кэше
+         * @param [id]
+         * @param callback
+         */
+        update: function(id, callback) {
+            var _this = this,
+                args = [];
+
+            if (arguments.length == 1) {
+                callback = id;
+            } else {
+                args.push(id);
+            }
+
+            args.push(function(err, val) {
+                value = val;
+                _this.lastUpdate = new Date();
+                callback(err, val);
+            });
+
+            getFunction.apply(ctx, args);
+        }
+    };
+};
+
+/**
+ * Возвращает данные по одному или нескольким ключам
+ * @param keys один ключ или несколько ключей через пробелы
+ * @param callback
+ */
+Cache.prototype.get = function(keys, callback) {
+    if (keys.indexOf(' ') == -1) {
+        this[keys].get(callback);
+    } else {
+        var res = {},
+            errors = [];
+
+        utils.sync(keys.split(' '), {
+            method: this.get,
+            ctx: this,
+            methodCallback: function(err, val, key) {
+                res[key] = val;
+                err && errors.push(err);
+            },
+            callback: function() { callback(errors.length && errors, res) }
+        });
+    }
+}
+
+exports.Cache = Cache;

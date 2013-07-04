@@ -66,19 +66,20 @@ function getOurPrice(price) {
 
 function executeMethodSync(n, items, options) {
     var method = options.method || function(i, c) { console.log(i); c(); },
+        methodCallback = options.methodCallback,
         callback = options.callback,
         verbose = options.verbose,
         ctx = options.ctx;
 
     if (n >= items.length) {
         callback && callback();
-        console.log('Выполнение операций успешно завершено');
+        verbose && console.log('Выполнение операций успешно завершено');
         return;
     }
 
-    var _this = ctx || this;
-    method.call(ctx, items[n], function(err) {
+    method.call(ctx, items[n], function(err, res) {
         err && console.log(err);
+        methodCallback && methodCallback(err, res, items[n]);
         verbose && console.log('%d% операций выполнено (%d из %d)', Math.round((n + 1) / items.length * 100), n + 1, items.length);
         verbose && options.metrics.writeTime('Затрачено времени (мин:cек)');
         executeMethodSync(n + 1, items, options);
@@ -88,7 +89,12 @@ function executeMethodSync(n, items, options) {
 /**
  * Синхронное выполнение операции для коллекции объектов
  * @param items
- * @param options
+ * @param options опции
+ * method - операция
+ * callback - колбэк вызываемый после выполнения всех операций
+ * methodCallback - колбэк вызываем после выполнения каждой операции
+ * ctx - контекст выполнения method
+ * verbose - подробный вывод
  */
 function sync(items, options) {
     options.verbose && (options.metrics = new TimeMetrics());
@@ -133,6 +139,22 @@ function downloadFile(src, dest, callback) {
         });
 
     req.end();
+}
+
+/**
+ * Поверхностная копия объекта
+ * @param obj
+ * @returns {Object}
+ */
+function clone(obj) {
+    var copy = {};
+
+    for (var f in obj) {
+        if (obj.hasOwnProperty(f)) {
+            copy[f] = obj[f]
+        }
+    }
+    return copy
 }
 
 /**
@@ -195,7 +217,7 @@ MultiQuery.prototype.completeQuery = function(err, queryName) {
     }
 
     completed && this.terminate();
-}
+};
 
 /**
  * Завершение транзакции
@@ -203,7 +225,7 @@ MultiQuery.prototype.completeQuery = function(err, queryName) {
  */
 MultiQuery.prototype.terminate = function() {
     this._callback(this._errors);
-}
+};
 
 
 exports.TimeMetrics = TimeMetrics;
@@ -214,5 +236,6 @@ exports.utils = {
     getOurPrice: getOurPrice,
     sync: sync,
     downloadFile: downloadFile,
-    productToDataTable: productToDataTable
+    productToDataTable: productToDataTable,
+    clone: clone
 };

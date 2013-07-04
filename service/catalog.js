@@ -1,4 +1,4 @@
-var utils = require('./utils.js').utils
+var utils = require('./utils.js').utils;
 
 function Catalog() {
 }
@@ -27,13 +27,20 @@ Catalog.checkAvailability = function(products, priceList) {
             missing: [],
             available: []
         },
-        dic = getDictionaryHash(priceList);
+        dicPrices = getDictionaryHash(priceList);
 
-    products.forEach(function(p) {
-        if (p.available) {
-            (!dic[p.article] || !dic[p.article].available) && res.missing.push(p);
+    products.forEach(function(our) {
+        var their = dicPrices[our.article];
+
+        if (our.available) {
+            (!their || !their.available) && res.missing.push(our);
         } else {
-            dic[p.article] && dic[p.article].available && res.available.push(p);
+            if (their && their.available) {
+                var np = utils.clone(our);
+
+                np.price = utils.getOurPrice(their.price);
+                res.available.push(np);
+            }
         }
     });
 
@@ -48,12 +55,14 @@ Catalog.checkAvailability = function(products, priceList) {
  */
 Catalog.getNewProducts = function(products, priceList) {
     var res = [],
-        dic = getDictionaryHash(products);
+        our = getDictionaryHash(products);
 
-    priceList.forEach(function(p) {
-        if (!dic[p.article]) {
-            p.price = utils.getOurPrice(p.price);
-            res.push(p);
+    priceList.forEach(function(their) {
+        if (!our[their.article]) {
+            var np = utils.clone(their);
+
+            np.price = utils.getOurPrice(np.price);
+            res.push(np);
         }
     });
 

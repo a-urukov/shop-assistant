@@ -8,7 +8,6 @@ utils = require('./utils.js').utils;
 
 var path = require('path');
 
-
 var Contractor = require('./contractor.js').Contractor,
     Images = require('./images.js').Images,
     DataAdapter = require('./data-adapter.js').DataAdapter,
