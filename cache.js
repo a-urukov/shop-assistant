@@ -13,6 +13,8 @@ Cache.prototype.register = function(key, getFunction, ctx) {
 
     this[key] = {
 
+        lastUpdate: new Date(),
+
         /**
          * Получение данных из кэша
          * @param [id] Необязяательный параметр для коллекций
@@ -61,28 +63,45 @@ Cache.prototype.register = function(key, getFunction, ctx) {
     };
 };
 
+var multiAction = function(method, keys, callback, ctx) {
+    (function() {
+        if (keys.indexOf(' ') == -1) {
+            this[keys][method](callback);
+        } else {
+            var res = {},
+                errors = [];
+
+            utils.sync(keys.split(' '), {
+                method: this[method],
+                ctx: this,
+                methodCallback: function(err, val, key) {
+                    res[key] = val;
+                    err && errors.push(err);
+                },
+                callback: function() {
+                    callback(errors.length && errors, res)
+                }
+            });
+        }
+    }).call(ctx)
+}
+
 /**
  * Возвращает данные по одному или нескольким ключам
  * @param keys один ключ или несколько ключей через пробелы
  * @param callback
  */
 Cache.prototype.get = function(keys, callback) {
-    if (keys.indexOf(' ') == -1) {
-        this[keys].get(callback);
-    } else {
-        var res = {},
-            errors = [];
+    multiAction('get', keys, callback, this);
+}
 
-        utils.sync(keys.split(' '), {
-            method: this.get,
-            ctx: this,
-            methodCallback: function(err, val, key) {
-                res[key] = val;
-                err && errors.push(err);
-            },
-            callback: function() { callback(errors.length && errors, res) }
-        });
-    }
+/**
+ * Возвращает данные по одному или нескольким ключам
+ * @param keys один ключ или несколько ключей через пробелы
+ * @param callback
+ */
+Cache.prototype.update = function(keys, callback) {
+    multiAction('update', keys, callback, this);
 }
 
 exports.Cache = Cache;

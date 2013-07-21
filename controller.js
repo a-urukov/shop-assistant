@@ -5,8 +5,14 @@ function Controller(cache) {
     this._cache = cache;
 }
 
+
+Controller.prototype.indexPage = function(callback) {
+    callback(null, { lastUpdate: this._cache['allProducts'] ? this._cache['allProducts'].lastUpdate : new Date() });
+}
+
+
 Controller.prototype.getAllProducts = function(callback) {
-    this._cache.allProducts.get(function(err, products) {
+    this._cache['allProducts'].get(function(err, products) {
         if (err) {
             callback(err, null);
         } else {
@@ -39,6 +45,10 @@ Controller.prototype.getAvailableProducts = function(callback) {
             aaData: catalog.checkAvailability(data.allProducts, data.contractorPrices).available.map(utils.productToDataTable)
         });
     });
+};
+
+Controller.prototype.syncData = function(callback) {
+
 };
 
 exports.Controller = Controller;

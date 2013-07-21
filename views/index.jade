@@ -3,7 +3,7 @@ extends layout
 block content
     div(class='hero-unit')
         h1='Анализ ассортимента «Улыбашки»'
-        p='Последняя синхронизация с сервисом поставщика 23.03.12'
+        p='Последняя синхронизация с сервисом поставщика ' + syncDate
         p
             a(class='btn btn-primary btn-large', href='#progressDlg', role='button', data-toggle='modal')='Синхронизация'
 

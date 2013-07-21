@@ -1,34 +1,59 @@
 exports.setRoutes = function(server, controller) {
 
     server.get('/', function(req, res) {
-        res.render('index.jade', {
-            locals: {
-                title: 'Your Page Title',
-                description: 'Your Page Description',
-                author: 'Your Name',
-                analyticssiteid: 'XXXXXXX'
-            }
+        controller.indexPage(function(err, response) {
+            res.render('index.jade', {
+                locals: {
+                    title: 'Анализ ассортимента «Улыбашки»',
+                    description: 'Анализ ассортимента «Улыбашки»',
+                    author: 'Уруков Андрей',
+                    syncDate: response.lastUpdate
+                }
+            });
         });
     });
 
-    server.get('/all-products', function(req, res) {
-        controller.getAllProducts(function(err, response) { res.send(response) });
+    // проверку req.xhr перенести на middle layer
+    server.get('/all-products', function(req, res, next) {
+        if (!req.xhr) {
+            next();
+        } else {
+            controller.getAllProducts(function(err, response) { res.send(response) });
+        }
     });
 
-    server.get('/new-products', function(req, res) {
-        controller.getNewProducts(function(err, response) { res.send(response) });
+    server.get('/new-products', function(req, res, next) {
+        if (!req.xhr) {
+            next();
+        } else {
+            controller.getNewProducts(function(err, response) { res.send(response) });
+        }
     });
 
-    server.get('/available-products', function(req, res) {
-        controller.getAvailableProducts(function(err, response) {
-            res.send(response)
-        });
+    server.get('/available-products', function(req, res, next) {
+        if (!req.xhr) {
+            next();
+        } else {
+            controller.getAvailableProducts(function(err, response) { res.send(response) });
+        }
     });
 
-    server.get('/missing-products', function(req, res) {
-        controller.getMissingProducts(function(err, response) {
-            res.send(response)
-        });
+    server.get('/missing-products', function(req, res, next) {
+        if (!req.xhr) {
+            next();
+        } else {
+            controller.getMissingProducts(function(err, response) { res.send(response) });
+        }
+    });
+
+    server.get('/sync-data', function(req, res, next) {
+        if (!req.xhr) {
+            next();
+        } else {
+            controller.syncData(function(err, response) {
+                res.send(response)
+            });
+        }
     });
 
     //A Route for Creating a 500 Error (Useful to keep around)

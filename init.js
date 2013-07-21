@@ -14,6 +14,8 @@ exports.initServer = function() {
         server.use(express.cookieParser());
         server.use(express.session({ secret: "shhhhhhhhh!"}));
         server.use(connect.static(__dirname + '/static'));
+        server.use(express.logger());
+        server.use(express.errorHandler());
         server.use(server.router);
     });
 
