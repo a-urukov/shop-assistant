@@ -1,25 +1,77 @@
 utils = require('./service/utils.js').utils;
+NotFound = function(msg) {
+    this.name = 'NotFound';
+    Error.call(this, msg);
+    Error.captureStackTrace(this, arguments.callee);
+};
 
-var init = require('./init.js'),
-    dataAdapter = new (require('./service/data-adapter.js').DataAdapter)({
-        host: 'ylibashki.ru',
-        user: 'ylibashki',
-        password: 'jk98D(3nASd7akjdA&',
-        database: 'ylibashki.ru'
+var connect = require('connect'),
+    express = require('express'),
+    server = express.createServer(),
+    MongoClient = require('mongodb').MongoClient,
+    dataAdapter,
+    contractor = new (require('./service/contractor.js').Contractor)({
+        host: 'www.suvenirow.ru',
+        port: 80,
+        path: '/xml/suvenirow.xml',
+        method: 'GET'
     }),
-    server = init.initServer(),
-    contractor = new (require('./service/contractor.js').Contractor)(),
     cache = new (require('./cache.js')).Cache(),
     controller = new (require('./controller').Controller)(cache),
-    io = init.initSocketIO();
+    port = (process.env.PORT || 8080);
 
-cache.register('contractorPrices', contractor.downloadPriceList, contractor);
-cache.register('allProducts', dataAdapter.getAllProducts, dataAdapter);
 
-require('./routes.js').setRoutes(server, controller);
-require('./socket.js').initSocket(io);
+server.configure(function() {
+    server.set('views', __dirname + '/views');
+    server.set('view options', { layout: false });
+    server.use(connect.bodyParser());
+    server.use(express.cookieParser());
+    server.use(express.session({ secret: "shhhhhhhhh!"}));
+    server.use(connect.static(__dirname + '/static'));
+    server.use(express.logger());
+    server.use(express.errorHandler());
+    server.use(server.router);
+});
 
-//TODO выводить категорию в таблицу
+server.error(function(err, req, res, next) {
+    if (err instanceof NotFound) {
+        res.render('404.jade', {
+            locals: {
+                title: '404 - Not Found',
+                description: '',
+                author: '',
+                analyticssiteid: 'XXXXXXX'
+            },
+            status: 404
+        });
+    } else {
+        res.render('500.jade', {
+            locals: {
+                title: 'The Server Encountered an Error',
+                description: '',
+                author: '',
+                analyticssiteid: 'XXXXXXX',
+                error: err
+            },
+            status: 500
+        });
+    }
+});
+
+MongoClient.connect('mongodb://127.0.0.1:27017/surprise', function(err, db) {
+
+    if (err) throw new Error(err);
+
+    dataAdapter = new (require('./service/data-adapter.js').DataAdapter)(db);
+
+    cache.register('contractorPrices', contractor.downloadPriceList, contractor);
+    cache.register('allProducts', dataAdapter.getAllProducts, dataAdapter);
+
+    require('./routes.js').setRoutes(server, controller);
+
+    server.listen(port);
+});
+
 
 
 

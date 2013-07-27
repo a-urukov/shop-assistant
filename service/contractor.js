@@ -7,13 +7,8 @@ var libxmljs = require('libxmljs'),
  * Работа с каталогом
  * @constructor
  */
-function Contractor() {
-    this._requestOptions = {
-        host: 'www.suvenirow.ru',
-        port: 80,
-        path: '/xml/suvenirow.xml',
-        method: 'GET'
-    };
+function Contractor(options) {
+    this._requestOptions = options;
 }
 
 /**
