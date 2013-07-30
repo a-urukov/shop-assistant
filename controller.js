@@ -48,7 +48,11 @@ Controller.prototype.getAvailableProducts = function(callback) {
 };
 
 Controller.prototype.syncData = function(callback) {
-
+    this._cache.update('contractorPrices allProducts', function(err, data) {
+        callback(err, {
+            lastUpdate: this._cache['allProducts'].lastUpdate
+        });
+    }.bind(this));
 };
 
 exports.Controller = Controller;

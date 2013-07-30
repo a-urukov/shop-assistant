@@ -52,6 +52,7 @@ Cache.prototype.register = function(key, getFunction, ctx) {
                 args.push(id);
             }
 
+            // callback
             args.push(function(err, val) {
                 value = val;
                 _this.lastUpdate = new Date();

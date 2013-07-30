@@ -3,11 +3,12 @@ extends layout
 block content
     div(class='hero-unit')
         h1='Анализ ассортимента «Улыбашки»'
-        p='Последняя синхронизация с сервисом поставщика ' + syncDate
+        p='Последняя синхронизация с сервисом поставщика '
+            span(id='time-sync-label')=syncDate
         p
-            a(class='btn btn-primary btn-large', href='#progressDlg', role='button', data-toggle='modal')='Синхронизация'
+            a(class='btn btn-primary btn-large', id='sync-btn', role='button')='Синхронизация'
 
-        div(class='modal hide fade', id='progressDlg', tabindex='-1', role='dialog', data-backdrop='static', aria-labelledby='myModalLabel')
+        div(class='modal hide fade', id='progress-modal', tabindex='-1', role='dialog', data-backdrop='static', aria-labelledby='myModalLabel')
             div(class='modal-header')
                 h3(id='myModalLabel')='Загрузка данных от поставщика'
 
@@ -18,22 +19,22 @@ block content
                 span(class='label label-success pull-right')='Выполнение операций'
 
             div(class='modal-footer')
-                button(id='dlg-btn', class='btn btn-primary', data-loading-text='Loading...')='OK'
+                button(id='modal-close-btn', class='btn btn-primary', data-loading-text='Loading...')='Close'
 
     ul(class='nav nav-tabs')
         li(class='dropdown active')
-            a(class='dropdown-toggle', href='#', role='button', data-toggle='dropdown')
+            a(class='dropdown-toggle', role='button', data-toggle='dropdown')
                 span(class='text')='Новые товары'
                 b(class='caret')
             ul(class='dropdown-menu', role='menu')
                 li
-                    a(id='new-link', class='dropdown-item', tabindex='-1', href='#', data-toggle='tab')='Новые товары'
+                    a(class='dropdown-item products-tab', products='new')='Новые товары'
                 li
-                    a(id='missing-link', class='dropdown-item', tabindex='-1', href='#', data-toggle='tab')='Нет в наличии у поставщика'
+                    a(class='dropdown-item products-tab', products='missing')='Нет в наличии у поставщика'
                 li
-                    a(id='available-link', class='dropdown-item', tabindex='-1', href='#', data-toggle='tab')='Неопубликованные товары'
+                    a(class='dropdown-item products-tab', products='available')='Неопубликованные товары'
         li
-            a(id='all-link', href='#', data-toggle='tab')='Все товары'
+            a(class='products-tab', products='all')='Все товары'
         li
             a(href='#', data-toggle='tab')='Анализ ассортимента'
 
