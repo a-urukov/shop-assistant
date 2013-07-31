@@ -1,8 +1,9 @@
 {
   "name": "shop-assistant",
+  "subdomain": "surprise",
   "description": "Sync, analyze and update catalog for e-shop",
   "author": "Urukov Andrey <urukov.a@gmail.com>",
-  "version": "0.0.1",
+  "version": "0.0.1-1",
   "dependencies": {
     "connect": "1.8.5",
     "express": "2.5.2",
@@ -18,5 +19,12 @@
     "mocha": "*",
     "should": "*"
   },
-  "engine": "node >= 0.6.6"
+  "engine": "node >= 0.6.6",
+  "subdomain": "surprise",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": "0.8.x"
+  }
 }

@@ -58,7 +58,7 @@ server.error(function(err, req, res, next) {
     }
 });
 
-MongoClient.connect('mongodb://127.0.0.1:27017/surprise', function(err, db) {
+MongoClient.connect('mongodb://nodejitsu:a3c449c508f7e1eb377af56f4b526dd3@dharma.mongohq.com:10000/nodejitsudb1870458715', function(err, db) {
 
     if (err) throw new Error(err);
 
