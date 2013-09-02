@@ -1,0 +1,36 @@
+div(class='modal hide fade', id='save-category-modal', role='dialog', aria-labelledby='save-category-label')
+    div(class='modal-header')
+        h3(id='save-category-label')='Редактирование категорий'
+    div(class='modal-body')
+        form
+            div(class='error row-fluid')
+                div(class='span12 bgcolor')
+                    div(class='alert alert-error')='Настал пиздец'
+            div(class='row-fluid')
+                div(class='span8')
+                    label='Название:'
+                    input(class='span12', type='text', data-model-field='name')
+                div(class='span4')
+                    label='URL:'
+                    input(class='span12', type='text', data-model-field='url')
+            div(class='row-fluid')
+                div(class='span8')
+                    label='Заголовок в меню:'
+                    input(class='span12', type='text', data-model-field='nameInMenu')
+                div(class='span4')
+                    label='Позиция в меню:'
+                    input(class='span12', type='text', data-model-field='posInMenu')
+            div(class='row-fluid')
+                label(class='control-label')='Описание:'
+                textarea(class='span12', rows='5', data-model-field='description')
+            div(class='row-fluid')
+                label(class='control-label')='Родительская категория:'
+                input(class='select2 span12', type='hidden', data-model-field='parentId')
+            div(class='row-fluid checkbox-wrap')
+                label(class='checkbox')='Опубликована'
+                    input(type='checkbox', data-model-field='published')
+
+
+    div(class='modal-footer')
+        button(id='save-category', class='btn btn-primary')='OK'
+        button(class='btn btn-primary', data-dismiss='modal', aria-hidden='true')='Отмена'

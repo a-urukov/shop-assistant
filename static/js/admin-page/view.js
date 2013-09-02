@@ -1,8 +1,8 @@
 var AdminPageView = Backbone.View.extend({
 
     initialize: function(options) {
-        _.bindAll(this, 'onChangeState');
-        this.model.on('change:state', this.onChangeState);
+        _.bindAll(this, 'onModelChange');
+        this.model.on('change', this.onModelChange);
         this.router = options.router;
     },
 
@@ -14,18 +14,26 @@ var AdminPageView = Backbone.View.extend({
         'click .products-tab': function(e) {
             this.router.navigate('products/' + $(e.target).attr('products'), { trigger: true });
             e.preventDefault();
-        }
+        },
+
+        'click #add-category': 'addCategory'
     },
 
-    onChangeState: function() {
-        var state = this.model.get('state');
+    onModelChange: function() {
+        var tab = this.model.get('tab'),
+            state = this.model.get('state'),
+            tabSelector = '[tab=' + tab + ']';
 
-        if (!state) return;
+        // активируем необходимую вкладку
+        $('.nav-tab, .tab-pane').removeClass('active');
+        $('.nav-tab' + tabSelector + ' , .tab-pane' + tabSelector).addClass('active');
 
-        var dom = $('.products-tab[products=' + state + ']');
+        tab === 'products' && this.showProductsTab(state);
+        tab === 'categories' && this.initCategories();
+    },
 
-        dom.tab('show');
-        dom.hasClass('dropdown-item') && $('.text', '.dropdown-toggle ').html(dom.html());
+    showProductsTab: function(state) {
+        if (['all', 'new', 'available', 'missing'].indexOf(state) === -1) return;
 
         this.dataTable && this.dataTable.fnDestroy();
         this.dataTable = $('.data-table').dataTable({
@@ -37,5 +45,41 @@ var AdminPageView = Backbone.View.extend({
             iDisplayLength: 30,
             sAjaxSource: this.model.getActionName()
         });
+    },
+
+    initCategories: function() {
+        if (this.model.has('categories')) return;
+
+        var categoriesData = JSON.parse($('.b-categories').attr('data')),
+            models = [],
+            saveCategoryView = this.saveCategoryView ||
+                (this.saveCategoryView = new SaveCategoryView({
+                    el: $('#save-category-modal'),
+                    getCategories: function() {
+                        return this.model.get('categories');
+                    }.bind(this)
+                })),
+            categories = this.categoriesViews = [];
+
+        categoriesData && categoriesData.forEach(function prepare(category) {
+            var model = new CategoryModel(category);
+
+            models.push(model);
+            categories.push(new CategoryView({
+                el: $('.b-category[data-id=' + model.id + ']'),
+                model: model,
+                saveView: saveCategoryView
+            }));
+            category.children && category.children.forEach(prepare);
+        });
+
+        this.model.set({ categories: new Categories(models) });
+
+
+    },
+
+    addCategory: function() {
+        this.initCategories();
+        this.saveCategoryView.show(new CategoryModel());
     }
 });

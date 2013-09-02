@@ -1,0 +1,29 @@
+div(class='b-categories', data=categories)
+    ul(class='b-categories__head row-fluid unstyled')
+        li(class='b-categories__column span1 text-info')='Название'
+        li(class='b-categories__column span1 text-info')='URL'
+        li(class='b-categories__column span4 text-info')='Описание'
+        li(class='b-categories__column span1 text-info')='№ в меню'
+        li(class='b-categories__column span1 text-info')='title в меню'
+        li(class='b-categories__column span1 text-info')='Кол-во товаров'
+        li(class='b-categories__column span1 text-info')='Опубликован'
+    ul(class='b-categories__list unstyled')
+        - categories && categories.forEach(function render(category) {
+            li(class='b-category', data-id=category._id.toString())
+                div(class='row-fluid')
+                    div(class='b-category__name span1')=category.name
+                    div(class='b-category__url span1')=category.url
+                    div(class='b-category__desc span4')=category.description
+                    div(class='b-category__pos span1')=category.posInMenu
+                    div(class='b-category__title span1')=category.nameInMenu
+                    div(class='b-category__count span1')=category.countProducts || 0
+                    div(class='b-category__published span1')=category.published ? 'Да' : 'Нет'
+                    button(class='b-category__edit btn btn-mini btn-info', type='button')='Редактировать'
+                    button(class='b-category__delete btn btn-mini btn-info', type='button')='Удалить'
+                - if (category.children.length) {
+                    h5(class='b-category__inner-head text-success')='Подкатегории:'
+                    ul(class='b-category__inner unstyled')
+                        - category.children.forEach(render);
+                - }
+        - });
+

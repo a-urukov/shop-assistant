@@ -1,15 +1,19 @@
 var catalog = require('./service/catalog.js').Catalog;
 
 
-function Controller(cache) {
+function Controller(cache, dataAdapter) {
     this._cache = cache;
+    this._data = dataAdapter;
 }
 
-
-Controller.prototype.indexPage = function(callback) {
-    callback(null, { lastUpdate: this._cache['allProducts'] ? this._cache['allProducts'].lastUpdate : new Date() });
-}
-
+Controller.prototype.adminPage = function(callback) {
+    this._data.getCategories(function(err, categories) {
+        callback(err, {
+            lastUpdate: new Date(),
+            categories: categories
+        });
+    });
+};
 
 Controller.prototype.getAllProducts = function(callback) {
     this._cache['allProducts'].get(function(err, products) {
@@ -53,6 +57,10 @@ Controller.prototype.syncData = function(callback) {
             lastUpdate: this._cache['allProducts'].lastUpdate
         });
     }.bind(this));
+};
+
+Controller.prototype.saveCategory = function(category, callback) {
+    return this._data.saveCategory(category, callback);
 };
 
 exports.Controller = Controller;

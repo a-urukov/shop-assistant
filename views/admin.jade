@@ -1,0 +1,67 @@
+extends layout
+
+block content
+    div(class='hero-unit')
+        h1='Анализ ассортимента'
+        p='Последняя синхронизация с сервисом поставщика '
+            span(id='time-sync-label')=syncDate
+        p
+            button(class='btn btn-primary', id='sync-btn')='Синхронизация'
+            button(class='btn btn-primary', data-toggle='modal', data-target='#add-product-modal')='Добавить товар'
+            button(id='add-category', class='btn btn-primary')='Добавить категорию'
+
+    include admin/add-product-dlg
+    include admin/categories/save-modal
+
+    div(class='tabbable')
+        ul(class='nav nav-tabs')
+            li(class='dropdown active nav-tab', tab='products')
+                a(class='dropdown-toggle', role='button', data-toggle='dropdown')
+                    span(class='text')='Новые товары'
+                    b(class='caret')
+                ul(class='dropdown-menu', role='menu')
+                    li
+                        a(class='dropdown-item products-tab', products='all')='Все товары'
+                    li
+                        a(class='dropdown-item products-tab', products='new')='Новые товары'
+                    li
+                        a(class='dropdown-item products-tab', products='missing')='Нет в наличии у поставщика'
+                    li
+                        a(class='dropdown-item products-tab', products='available')='Доступные у поставщика'
+                    li
+                        a(class='dropdown-item products-tab', products='no-published')='Неопубликованные товары'
+                    li
+                        a(class='dropdown-item products-tab', products='black-list')='Черный список'
+            li(class='nav-tab', tab='categories')
+                a(href='#categories')='Категории'
+            li(class='nav-tab', tab='analysis')
+                a(href='#analysis')='Анализ ассортимента'
+
+        div(class='tab-content')
+            div(class='tab-pane active', tab='products')
+                table(class='data-table table table-striped table-bordered')
+                    thead
+                        tr
+                            th(width='5%')='Артикул'
+                            th(width='27%')='Название'
+                            th(width='12%')='Цена (розн.)'
+                            th(width='52%')='Описание'
+                            th(width='2%')='Наличие'
+                            th(width='2%')='Чекбокс'
+                    tbody
+                    tfoot
+                        tr
+                            th='Артикул'
+                            th='Название'
+                            th='Цена'
+                            th='Описание'
+                            th='Наличие'
+                            th='Чекбокс'
+
+            div(class='tab-pane', tab='categories')
+                include admin/categories/categories
+
+            div(class='tab-pane', tab='analysis')
+                h1(class='nav-header')='Анализ ассортимента'
+
+

@@ -5,6 +5,6 @@ var AdminPageModel = Backbone.Model.extend({
     },
 
     getActionName: function() {
-        return this.get('state') + '-products';
+        return this.get('state') + '-' + this.get('tab');
     }
 });

@@ -1,14 +1,23 @@
 exports.setRoutes = function(server, controller) {
 
     server.get('/', function(req, res) {
-        controller.indexPage(function(err, response) {
-            res.render('index.jade', {
-                locals: {
-                    title: 'Анализ ассортимента «Улыбашки»',
-                    description: 'Анализ ассортимента «Улыбашки»',
-                    author: 'Уруков Андрей',
-                    syncDate: response.lastUpdate
-                }
+        res.render('index.jade', {
+            locals: {
+                title: 'Интернет магазин – главная старница',
+                description: 'shop assistant',
+                author: 'Уруков Андрей'
+            }
+        });
+    });
+
+    server.get('/admin', function(req, res) {
+        controller.adminPage(function(err, response) {
+            res.render('admin.jade', {
+                title: 'Интернет магазин – страница администрирования',
+                description: 'shop assistant',
+                author: 'Уруков Андрей',
+                syncDate: response.lastUpdate,
+                categories: response.categories
             });
         });
     });
@@ -54,6 +63,28 @@ exports.setRoutes = function(server, controller) {
                 res.send(response)
             });
         }
+    });
+
+    server.post('/catalog/', function(req, res, next) {
+        controller.saveCategory(req.body, function(err, category) {
+            err && console.log(JSON.stringify(err));
+            res.send(category ? { id: category._id } : err || 'Error adding category');
+        })
+    });
+
+    server.put('/catalog/', function(req, res, next) {
+        controller.saveCategory(req.body, function(err, category) {
+            err && console.log(JSON.stringify(err));
+            res.send(category ? { id: category._id } : err || 'Error updating category');
+        })
+    });
+
+    server.post('/uncategorized/no-name', function(req, res) {
+        res.send({ id: 1 })
+    });
+
+    server.put('/uncategorized/no-name', function(req, res) {
+        res.send('The best success')
     });
 
     //The 404 Route (ALWAYS Keep this as the last route)

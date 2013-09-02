@@ -1,0 +1,53 @@
+.btn-primary
+{
+    margin-right: 10px;
+}
+
+.hero-unit
+{
+    padding: 10px 60px 20px !important;
+}
+
+.data-table
+{
+    width: 100% !important;
+}
+
+.row-fluid .select2.span12 { margin-left: 0; }
+
+.b-categories
+{
+    margin: 0 10px !important;
+
+    font-size: 12px;
+}
+
+.b-category
+{
+    margin-bottom: 20px;
+}
+
+.b-category__name
+{
+    font-weight: bold;
+}
+
+.b-category__edit
+{
+    margin: 0 10px;
+}
+
+.b-category__inner-head
+{
+    margin: 25px 0;
+}
+
+.b-category__inner
+{
+    border-bottom: 1px #e5e5e5 solid;
+}
+
+.checkbox-wrap
+{
+    margin-top: 15px;
+}

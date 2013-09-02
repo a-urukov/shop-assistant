@@ -1,56 +1,5 @@
-extends layout
+extends ./layout
 
 block content
-    div(class='hero-unit')
-        h1='Анализ ассортимента «Улыбашки»'
-        p='Последняя синхронизация с сервисом поставщика '
-            span(id='time-sync-label')=syncDate
-        p
-            a(class='btn btn-primary btn-large', id='sync-btn', role='button')='Синхронизация'
+    h1='Интернет магазин'
 
-        div(class='modal hide fade', id='progress-modal', tabindex='-1', role='dialog', data-backdrop='static', aria-labelledby='myModalLabel')
-            div(class='modal-header')
-                h3(id='myModalLabel')='Загрузка данных от поставщика'
-
-            div(class='modal-body')
-                div(class='progress progress-striped active')
-                    div(class='bar', style='width: 100%;')
-                span(class='label label-info pull-left')='Общее время: 0:00'
-                span(class='label label-success pull-right')='Выполнение операций'
-
-            div(class='modal-footer')
-                button(id='modal-close-btn', class='btn btn-primary', data-loading-text='Loading...')='Close'
-
-    ul(class='nav nav-tabs')
-        li(class='dropdown active')
-            a(class='dropdown-toggle', role='button', data-toggle='dropdown')
-                span(class='text')='Новые товары'
-                b(class='caret')
-            ul(class='dropdown-menu', role='menu')
-                li
-                    a(class='dropdown-item products-tab', products='new')='Новые товары'
-                li
-                    a(class='dropdown-item products-tab', products='missing')='Нет в наличии у поставщика'
-                li
-                    a(class='dropdown-item products-tab', products='available')='Неопубликованные товары'
-        li
-            a(class='products-tab', products='all')='Все товары'
-        li
-            a(href='#', data-toggle='tab')='Анализ ассортимента'
-
-    table(class='data-table table table-striped table-bordered')
-        thead
-            tr
-                th(width='5%')='Артикул'
-                th(width='27%')='Название'
-                th(width='10%')='Цена (розн.)'
-                th(width='63%')='Описание'
-                th(width='2%')='Наличие'
-        tbody
-        tfoot
-            tr
-                th='Артикул'
-                th='Название'
-                th='Цена'
-                th='Описание'
-                th='Наличие'
