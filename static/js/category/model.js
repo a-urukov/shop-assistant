@@ -14,5 +14,5 @@ CategoryModel = Backbone.Model.extend({
         return Validate.isNotEmpty('name', attrs.name) || Validate.mustUrlPath('url', attrs.url);
     },
 
-    url: 'catalog/'
+    url: 'admin/categories/'
 });

@@ -74,6 +74,7 @@ function executeMethodSync(n, items, options) {
     if (n >= items.length) {
         callback && callback();
         verbose && console.log('Выполнение операций успешно завершено');
+
         return;
     }
 
@@ -115,6 +116,7 @@ function downloadFile(src, dest, callback) {
     if (path.existsSync(fileName)) {
         console.log('Файл %s существует', fileName);
         callback && callback();
+
         return;
     }
 
@@ -129,13 +131,9 @@ function downloadFile(src, dest, callback) {
         },
 
         req = http.request(options, function(res) {
-
             res.pipe(writeStream);
-
             res.on('end', function() { callback && callback() });
-
             res.on('error', function(error) { callback('Ошибка при загрузки файла. Подробнее: error') });
-
         });
 
     req.end();
@@ -146,7 +144,7 @@ function downloadFile(src, dest, callback) {
  * @param {String} name
  * @returns {String}
  */
-nameToUrl = function(name) {
+function nameToUrl(name) {
     var rules = {'Ё': 'YO', 'Й': 'I', 'Ц': 'TS', 'У': 'U', 'К': 'K', 'Е': 'E', 'Н': 'N', 'Г': 'G', 'Ш': 'SH', 'Щ': 'SCH', 'З': 'Z', 'Х': 'H', 'Ъ': '', 'ё': 'yo', 'й': 'i', 'ц': 'ts', 'у': 'u', 'к': 'k', 'е': 'e', 'н': 'n', 'г': 'g', 'ш': 'sh', 'щ': 'sch', 'з': 'z', 'х': 'h', 'ъ': '', 'Ф': 'F', 'Ы': 'I', 'В': 'V', 'А': 'a', 'П': 'P', 'Р': 'R', 'О': 'O', 'Л': 'L', 'Д': 'D', 'Ж': 'ZH', 'Э': 'E', 'ф': 'f', 'ы': 'i', 'в': 'v', 'а': 'a', 'п': 'p', 'р': 'r', 'о': 'o', 'л': 'l', 'д': 'd', 'ж': 'zh', 'э': 'e', 'Я': 'Ya', 'Ч': 'CH', 'С': 'S', 'М': 'M', 'И': 'I', 'Т': 'T', 'Ь': '', 'Б': 'B', 'Ю': 'YU', 'я': 'ya', 'ч': 'ch', 'с': 's', 'м': 'm', 'и': 'i', 'т': 't', 'ь': '', 'б': 'b', 'ю': 'yu', ' ': '-'};
 
     return name && name.split('').map(function(symbol) {
@@ -163,27 +161,44 @@ function clone(obj) {
     var copy = {};
 
     for (var f in obj) {
-        if (obj.hasOwnProperty(f)) {
-            copy[f] = obj[f]
-        }
+        if (obj.hasOwnProperty(f)) copy[f] = obj[f];
     }
-    return copy
+
+    return copy;
 }
 
 /**
- * Представление товара в форамате строки компонента DataRow
- * @param product
- * @returns {Array}
+ * Колбэк прокидывающий данные в response
+ * @param response
+ * @returns {Function}
  */
-function productToDataTable(product) {
-    return [
-        product.article,
-        product.name,
-        product.price,
-        product.description ? product.description.substr(0, 300) + '...' : 'отсутствует',
-        product.available ? '+' : '-',
-        '<input type="checkbox" value="7" name="check7">'
-    ];
+function sendingCallback(response) {
+    return function(err, data) {
+        if (err) {
+            throw new Error(JSON.stringify(err));
+        }
+        response.send(data);
+    }
+}
+
+/**
+ * Представление товара в форамате компонента DataTable
+ * @param {Array} products
+ * @returns {Object}
+ */
+function toDataTable(products) {
+    return {
+        aaData: products.map(function(product) {
+            return [
+                product.article,
+                product.name,
+                product.price,
+                product.description ? product.description.substr(0, 300) + '...' : 'отсутствует',
+                product.available ? '+' : '-',
+                '<input type="checkbox" value="7" name="check7">'
+            ]
+        })
+    };
 }
 
 /**
@@ -226,12 +241,14 @@ MultiQuery.prototype.completeQuery = function(err, queryName) {
     for (var q in this._queries) {
         if (this._queries[q]) {
             completed = false;
+
             break;
         }
     }
 
     completed && this.terminate();
 };
+
 
 /**
  * Завершение транзакции
@@ -250,8 +267,7 @@ exports.utils = {
     getOurPrice: getOurPrice,
     sync: sync,
     downloadFile: downloadFile,
-    productToDataTable: productToDataTable,
+    toDataTable: toDataTable,
     clone: clone,
     nameToUrl: nameToUrl
-
 };

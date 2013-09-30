@@ -11,19 +11,31 @@ function DataAdapter(db) {
 }
 
 /**
- * Получение всех товаров каталога
+ * Получение товаров каталога
+ * @param {Object} options
+ * {bool} options.published – опубликованные|неопубликованные товары
+ * {bool} options.ignored – игнорируемые|неигнорируемые товары
  * @param callback
  */
-DataAdapter.prototype.getAllProducts = function(callback) {
-    this._products.find().toArray(callback);
+DataAdapter.prototype.getProducts = function(options, callback) {
+    var query = {};
+
+    if (options && callback) {
+        typeof options.published === 'boolean' && (query.published = options.published);
+        typeof options.ignored === 'boolean' && (query.ignored = options.ignored);
+    } else if (!callback) {
+        callback = options;
+    }
+
+    this._products.find(query).toArray(callback);
 }
 
 /**
- * Добавление продукта в каталог
+ * Сохранение продукта в каталог
  * @param product
  * @param callback
  */
-DataAdapter.prototype.insertProduct = function(product, callback) {
+DataAdapter.prototype.saveProduct = function(product, callback) {
     var name = product.name,
         caps;
 
@@ -49,6 +61,7 @@ DataAdapter.prototype.getCategories = function(callback) {
     this._categories.find().toArray(function(err, categories) {
         if (err) {
             callback(err);
+
             return;
         }
 

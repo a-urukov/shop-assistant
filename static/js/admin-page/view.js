@@ -7,9 +7,6 @@ var AdminPageView = Backbone.View.extend({
     },
 
     events: {
-        'click .dropdown-item': function(e) {
-            $('.text', '.dropdown-toggle ').html(e.target.innerHTML);
-        },
 
         'click .products-tab': function(e) {
             this.router.navigate('products/' + $(e.target).attr('products'), { trigger: true });
@@ -33,7 +30,10 @@ var AdminPageView = Backbone.View.extend({
     },
 
     showProductsTab: function(state) {
-        if (['all', 'new', 'available', 'missing'].indexOf(state) === -1) return;
+        if (['published', 'unpublished', 'new', 'available', 'missing', 'ignored'].indexOf(state) === -1) return;
+
+        // обновляем метку категории товаров в табе
+        $('.current-products-tab').html($('[products=' + state + ']').html());
 
         this.dataTable && this.dataTable.fnDestroy();
         this.dataTable = $('.data-table').dataTable({
@@ -74,8 +74,6 @@ var AdminPageView = Backbone.View.extend({
         });
 
         this.model.set({ categories: new Categories(models) });
-
-
     },
 
     addCategory: function() {

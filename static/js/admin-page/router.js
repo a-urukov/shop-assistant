@@ -27,7 +27,7 @@ var AdminPageRouter = Backbone.Router.extend({
     getProducts: function(state) {
         this.model.set({
             tab: 'products',
-            state: state || 'all'
+            state: state || 'published'
         });
     }
 

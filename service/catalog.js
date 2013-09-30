@@ -33,7 +33,7 @@ Catalog.checkAvailability = function(products, priceList) {
         var their = dicPrices[our.article];
 
         if (our.available) {
-            (!their || !their.available) && res.missing.push(our);
+            their && !their.available && res.missing.push(our);
         } else {
             if (their && their.available) {
                 var np = utils.clone(our);

@@ -51,3 +51,8 @@
 {
     margin-top: 15px;
 }
+
+.dropdown-item
+{
+    cursor: pointer;
+}

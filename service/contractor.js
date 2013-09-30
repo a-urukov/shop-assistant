@@ -44,7 +44,7 @@ Contractor.prototype._getXml = function(callback) {
 
             res.on('end', function() { callback(null, xmlData) });
 
-            res.on('error', function(error) { callback(error, null) });
+            res.on('error', function(error) { callback("Can't sync data from contractor: " + JSON.stringify(error), null) });
         });
 
     req.end();

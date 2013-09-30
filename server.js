@@ -18,8 +18,10 @@ var connect = require('connect'),
     }),
     cache = new (require('./cache.js')).Cache(),
     controller,
-    port = (process.env.PORT || 8080);
-
+    port = (process.env.PORT || 8080),
+    ProductsController = require('./controllers/products.js').ProductsController,
+    PagesController = require('./controllers/pages.js').PagesController,
+    CategoriesController = require('./controllers/categories.js').CategoriesController;
 
 server.configure(function() {
     server.set('views', __dirname + '/views');
@@ -60,15 +62,18 @@ server.configure(function() {
 //MongoClient.connect('mongodb://nodejitsu:a3c449c508f7e1eb377af56f4b526dd3@dharma.mongohq.com:10000/nodejitsudb1870458715', function(err, db) {
 MongoClient.connect('mongodb://127.0.0.1:27017/surprise', function(err, db) {
 
-    if (err) throw new Error(err);
+    if (err) throw new Error(JSON.stringify(err));
 
     dataAdapter = new (require('./service/data-adapter.js').DataAdapter)(db);
-    controller = new (require('./controller').Controller)(cache, dataAdapter);
 
     cache.register('contractorPrices', contractor.downloadPriceList, contractor);
-    cache.register('allProducts', dataAdapter.getAllProducts, dataAdapter);
+    cache.register('allProducts', dataAdapter.getProducts, dataAdapter);
 
-    require('./routes.js').setRoutes(server, controller);
+    require('./routes.js').setRoutes(server, {
+        products: new ProductsController(cache, dataAdapter),
+        pages: new PagesController(dataAdapter),
+        categories: new CategoriesController(dataAdapter)
+    });
 
     server.listen(port);
 });

@@ -1,6 +1,6 @@
 describe('controller', function() {
 
-    describe('getAllProducts', function() {
+    describe('getProducts', function() {
         it('correct error', function(done) {
 
             console.log(done);
