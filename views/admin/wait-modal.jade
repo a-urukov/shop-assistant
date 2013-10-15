@@ -1,0 +1,9 @@
+div(class='modal hide fade', id='wait-modal', role='dialog', data-backdrop='static',  aria-labelledby='wait-label')
+    div(class='modal-header')
+        h3(id='wait-label')='Loading'
+
+    div(class='modal-body')
+        p(class='state-text')
+
+    div(class='modal-footer')
+        button(type='button', class='btn-ok btn btn-primary', aria-hidden='true', data-dismiss='modal', data-loading-text='Loading...')='ОК'

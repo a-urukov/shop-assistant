@@ -1,4 +1,9 @@
-var ObjectID = require('mongodb').ObjectID;
+var ObjectID = require('mongodb').ObjectID,
+    idsFilter = function(ids) {
+        return {
+            _id: { $in: ids.map(function(id) { return new ObjectID(id) }) }
+        };
+    };
 
 /**
  * Доступ к данным
@@ -8,6 +13,7 @@ function DataAdapter(db) {
     this._db = db;
     this._products = this._db.collection('products');
     this._categories = this._db.collection('categories');
+    this._contractorsProducts = this._db.collection('contractorsProducts');
 }
 
 /**
@@ -112,25 +118,136 @@ DataAdapter.prototype.updatePriceAndAvailability = function(product, callback) {
             available: product.available && price
         }
     }, callback);
-}
+};
 
 /**
- * Удаление продукта из каталога
- * @param product
+ * Получение товаров поставщиков
  * @param callback
  */
-DataAdapter.prototype._deleteProduct = function(product, callback) {
-    this._products.remove({ article: product.article }, callback);
-}
+DataAdapter.prototype.getContractorsProducts = function(callback) {
+    this._contractorsProducts.find().toArray(callback);
+};
+
 
 /**
- * //TODO Добавление дополнительных фото к товару
- * @param auxPhotos
+ * Синхронизация ассортимента поставщика
+ * @param data
  * @param callback
  */
-DataAdapter.prototype.addAuxPhoto = function(auxPhotos, callback) {
+DataAdapter.prototype.syncContractorsData = function(data, callback) {
+    utils.sync(data, {
+        method: function(product, callback) {
+            var price = +product.price || 0;
 
-}
+            this._contractorsProducts.update({
+                    article: product.article
+                },
+                {
+                    article: product.article,
+                    name: product.name,
+                    optPrice: price,
+                    available: product.available && price
+                },
+                { upsert: true },
+                callback
+            );
+        },
+        ctx: this,
+        callback: callback
+    });
+};
+
+
+/**
+ * Изменения стейта товара (Опубликованный, Неопубликованный, Черный список)
+ * @param state
+ * @param ids
+ * @param callback
+ */
+DataAdapter.prototype.changeProductsState = function(state, ids, callback) {
+    this._products.update(idsFilter(ids),
+        { $set: { published: !!state.published, ignored: !!state.ignored } }, { multi: true }, callback);
+};
+
+/**
+ * Актуализировать наличие и [цены]
+ * @param ids
+ * @param callback
+ */
+DataAdapter.prototype.actualizeProducts = function(ids, callback) {
+    var _this = this;
+
+    this._products
+        .find(idsFilter(ids))
+        .toArray(function(err, products) {
+            if (err || !products) {
+                callback(err, products);
+
+                return;
+            }
+
+            _this._contractorsProducts
+                .find({ article: { $in: products.map(function(p) { return p.article }) } })
+                .toArray(function(err, contractorProducts) {
+                    if (err || !products) {
+                        callback(err, products);
+
+                        return;
+                    }
+
+                    var availableHash = {};
+
+                    contractorProducts.forEach(function(contractorProduct) {
+                        availableHash[contractorProduct.article] = contractorProduct.available;
+                    });
+
+                    utils.sync(products, {
+                        method: function(product, callback) {
+                            _this._products.update({ _id: product._id },
+                                { $set: { available: !!availableHash[product.article] } },
+                                callback)
+                        },
+                        ctx: _this,
+                        callback: callback
+                    });
+                });
+        });
+};
+
+/**
+ * Добавление продуктов из ассортимента поставщика
+ * @param ids
+ * @param callback
+ */
+DataAdapter.prototype.addFromContractor = function(ids, callback) {
+    this._contractorsProducts.find(idsFilter(ids)).toArray(function(err, products) {
+        if (err || !products) {
+            callback(err, products);
+
+            return;
+        }
+
+        this._products.insert(products.map(function(product) {
+            return {
+                name: product.name,
+                available: product.available,
+                published: false,
+                ignored: false,
+                article: product.article,
+                optPrice: product.optPrice
+            }
+        }), callback);
+    }.bind(this))
+};
+
+/**
+ * Удаление продуктов из каталога
+ * @param ids
+ * @param callback
+ */
+DataAdapter.prototype.removeProducts = function(ids, callback) {
+    this._products.remove(idsFilter(ids), callback);
+};
 
 exports.DataAdapter = DataAdapter;
 

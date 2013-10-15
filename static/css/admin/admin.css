@@ -56,3 +56,32 @@
 {
     cursor: pointer;
 }
+
+.toolbox, .action-set
+{
+    display: none;
+}
+
+.toolbox.active, .action-set.active
+{
+    display: inline-block;
+}
+
+.tab-pane_type_products
+{
+    position: relative;
+}
+
+.select-all
+{
+    position: absolute;
+    right: 430px;
+    z-index: 100;
+}
+
+.deselect-all
+{
+    position: absolute;
+    right: 330px;
+    z-index: 100;
+}

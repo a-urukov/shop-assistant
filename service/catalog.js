@@ -36,10 +36,7 @@ Catalog.checkAvailability = function(products, priceList) {
             their && !their.available && res.missing.push(our);
         } else {
             if (their && their.available) {
-                var np = utils.clone(our);
-
-                np.price = utils.getOurPrice(their.price);
-                res.available.push(np);
+                res.available.push(our);
             }
         }
     });

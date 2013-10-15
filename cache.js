@@ -1,6 +1,14 @@
-function Cache() {
+/**
+ * Реализация кэша
+ *
+ * Пример:
+ * cache.register('allProducts', dataAdapter.getProducts, dataAdapter);
+ * cache.get('allProducts', function(err, data) { });
+ *
+ * @constructor
+ */
 
-}
+function Cache() { }
 
 /**
  * Регитсрация ключа в кэше

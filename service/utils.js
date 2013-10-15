@@ -79,7 +79,8 @@ function executeMethodSync(n, items, options) {
     }
 
     method.call(ctx, items[n], function(err, res) {
-        err && console.log(err);
+        if (err) { callback(err); return; }
+
         methodCallback && methodCallback(err, res, items[n]);
         verbose && console.log('%d% операций выполнено (%d из %d)', Math.round((n + 1) / items.length * 100), n + 1, items.length);
         verbose && options.metrics.writeTime('Затрачено времени (мин:cек)');
@@ -192,10 +193,10 @@ function toDataTable(products) {
             return [
                 product.article,
                 product.name,
-                product.price,
+                (product.optPrice || '-') + '/' + (product.recPrice || '-') + '/' + (product.price || '-'),
                 product.description ? product.description.substr(0, 300) + '...' : 'отсутствует',
                 product.available ? '+' : '-',
-                '<input type="checkbox" value="7" name="check7">'
+                '<input type="checkbox" value=' + product._id + ' class="product-checkbox">'
             ]
         })
     };
