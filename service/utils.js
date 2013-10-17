@@ -190,13 +190,38 @@ function sendingCallback(response) {
 function toDataTable(products) {
     return {
         aaData: products.map(function(product) {
+            var name = product.name,
+                priority = product.priority || '0',
+                label = (function() {
+                    switch (priority) {
+                        case 1:
+                            return '';
+                        case 2:
+                            return 'info';
+                        case 3:
+                            return 'success';
+                        case 4:
+                            return 'warning';
+                        case 5:
+                            return 'important';
+                        default:
+                            return 'inverse';
+                    }
+                })();
+                id = product._id;
+
             return [
                 product.article,
-                product.name,
-                (product.optPrice || '-') + '/' + (product.recPrice || '-') + '/' + (product.price || '-'),
-                product.description ? product.description.substr(0, 300) + '...' : 'отсутствует',
+                '<a class="product-name" href="#" data-title="' + name + '" data-content="' +
+                    (product.description || 'Описание отсутствует') + '">' + name + '</a>',
+                product.optPrice || '-',
+                product.recPrice || '-',
+                product.price || '-',
+                'нет категории',
+                '<span class="label ' + label + '">' + priority + '</span>',
                 product.available ? '+' : '-',
-                '<input type="checkbox" value=' + product._id + ' class="product-checkbox">'
+                '<button class="btn btn-info" data-product-id="' + id + '">Редактировать</button>',
+                '<input type="checkbox" value=' + id + ' class="product-checkbox">'
             ]
         })
     };

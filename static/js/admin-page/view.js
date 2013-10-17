@@ -14,6 +14,16 @@ var AdminPageView = Backbone.View.extend({
             e.preventDefault();
         },
 
+        // Отображать описание при наведении
+        'mouseover .product-name': function(e) {
+            $(e.target).popover('show');
+        },
+
+        // Скрывать описание
+        'mouseout .product-name': function(e) {
+            $(e.target).popover('hide');
+        },
+
         // Обработчик клика по кнопке action
         'click .action-btn': function(e) {
             var action = $(e.target).attr('data-action'),
