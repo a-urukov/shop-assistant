@@ -4,6 +4,15 @@ var AdminPageView = Backbone.View.extend({
         _.bindAll(this, 'onModelChange');
         this.model.on('change', this.onModelChange);
         this.router = options.router;
+
+        this._initCategories();
+
+        this.saveProductView = new SaveProductView({
+            el: $('#save-product-modal'),
+            getCategories: function() {
+                return this.model.get('categories');
+            }.bind(this)
+        });
     },
 
     events: {
@@ -59,6 +68,11 @@ var AdminPageView = Backbone.View.extend({
         'click #add-category': function() {
             this.model.set('tab', 'categories');
             this.saveCategoryView.show(new CategoryModel());
+        },
+
+        // Добавить товар
+        'click #add-product': function() {
+            this.saveProductView.show(new ProductModel());
         },
 
         // Кнопка выбрать все
@@ -152,7 +166,6 @@ var AdminPageView = Backbone.View.extend({
         $('.toolbox_tab_' + tab + ', .action-set_state_' + state).addClass('active');
 
         tab === 'products' && this._showProductsTab();
-        tab === 'categories' && this._initCategoriesTab();
     },
 
     /**
@@ -182,7 +195,7 @@ var AdminPageView = Backbone.View.extend({
     /**
      * Инициализации вкладки категорий
      */
-    _initCategoriesTab: function() {
+    _initCategories: function() {
         if (this.model.has('categories')) return;
 
         var categoriesData = JSON.parse($('.b-categories').attr('data')),

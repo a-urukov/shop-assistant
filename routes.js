@@ -105,13 +105,15 @@ exports.setRoutes = function(server, controllers) {
     server.post('/admin/categories/', saveCategory);
     server.put('/admin/categories/', saveCategory);
 
-    server.post('/uncategorized/no-name', function(req, res) {
-        res.send({ id: 1 });
+    /** PRODUCTS **/
+
+    var saveProduct = xhr(function(req, res) {
+        products.saveProduct(req.body, sendingCallback(res));
     });
 
-    server.put('/uncategorized/no-name', function(req, res) {
-        res.send('The best success');
-    });
+    server.post('/admin/products/', saveProduct);
+    server.put('/admin/products/', saveProduct);
+
 
     /** CONTRACTORS **/
 

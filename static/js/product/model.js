@@ -1,16 +1,19 @@
 ProductModel = Backbone.Model.extend({
+
+    idAttribute: '_id',
+
     defaults: {
-        category: 'uncategorized',
-        price: 0
+        contractor: 'FineDesign'
     },
 
     validate: function() {
-
-    },
-
-    url: function() {
         var attrs = this.attributes;
 
-        return attrs.category + '/' + attrs.url
-    }
+        console.log(attrs.url);
+        return Validate.isNotEmpty('name', attrs.name) || Validate.isNotEmpty('article', attrs.article) ||
+            Validate.mustUrlPath('url', attrs.url);
+    },
+
+    url: 'admin/products/'
+
 });

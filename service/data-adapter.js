@@ -51,15 +51,20 @@ DataAdapter.prototype.saveProduct = function(product, callback) {
         name = name.replace(caps, caps[0].toUpperCase() + caps.substr(1).toLowerCase());
     }
 
-    this._products.insert({
+    this._products.save({
         name: name,
-        url: product.url || utils.nameToUrl(name),
-        price: +product.price || 0,
         article: product.article,
+        contractor: product.contractor,
+        url: product.url || utils.nameToUrl(name),
+        optPrice: +product.optPrice,
+        recPrice: +product.recPrice,
+        ourPrice: +product.ourPrice,
         description: product.description,
-        published: false,
+        categories: product.categories,
+        priority: +product.priority,
+        published: !!product.published && !product.ignored,
         ignored: !!product.ignored,
-        available: product.available && product.price
+        available: !!product.available
     }, callback);
 }
 
@@ -128,7 +133,6 @@ DataAdapter.prototype.getContractorsProducts = function(callback) {
     this._contractorsProducts.find().toArray(callback);
 };
 
-
 /**
  * Синхронизация ассортимента поставщика
  * @param data
@@ -156,7 +160,6 @@ DataAdapter.prototype.syncContractorsData = function(data, callback) {
         callback: callback
     });
 };
-
 
 /**
  * Изменения стейта товара (Опубликованный, Неопубликованный, Черный список)

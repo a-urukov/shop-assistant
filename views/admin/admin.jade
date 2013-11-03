@@ -1,94 +1,95 @@
 extends ../layout
 
 block content
-    div(class='hero-unit')
-        h1='Анализ ассортимента'
-        p='Последняя синхронизация с сервисом поставщика '
-            span(id='time-sync-label')=syncDate
-        div(class='pull-right toolbox toolbox_tab_products')
-            div(class='action-set action-set_state_published')
-                button(class='btn btn-primary btn-danger action-btn', data-action='unpublish')='Снять с публикации'
-            div(class='action-set action-set_state_unpublished')
-                button(class='btn btn-primary btn-success action-btn', data-action='publish')='Опубликовать'
-                button(class='btn btn-primary btn-danger action-btn', data-action='ignore')='В черный список'
-            div(class='action-set action-set_state_new')
-                button(class='btn btn-primary btn-success action-btn', data-action='add-from-contractor')='В ассортимент'
-                button(class='btn btn-primary btn-danger action-btn', data-action='ignore')='В черный список'
-            div(class='action-set action-set_state_available')
-                button(class='btn btn-primary btn-info action-btn', data-action='actualize')='Актуализировать'
-            div(class='action-set action-set_state_missing')
-                button(class='btn btn-primary btn-info action-btn', data-action='actualize')='Актуализировать'
-                button(class='btn btn-primary btn-danger action-btn', data-action='ignore')='В черный список'
-            div(class='action-set action-set_state_ignored')
-                button(class='btn btn-primary btn-success action-btn', data-action='unignore')='В ассортимент'
-                button(class='btn btn-primary btn-danger action-btn', data-action='remove')='Удалить'
+    .hero-unit
+        h1 Анализ ассортимента
+        p Последняя синхронизация с сервисом поставщика.
+            span#time-sync-label=syncDate
+        .pull-right.toolbox.toolbox_tab_products
+            .action-set.action-set_state_published
+                button.btn.btn-primary.btn-danger.action-btn(data-action='unpublish') Снять с публикации
+            .action-set.action-set_state_unpublished
+                button.btn.btn-primary.btn-success.action-btn(data-action='publish') Опубликовать
+                button.btn.btn-primary.btn-danger.action-btn(data-action='ignore') В черный список
+            .action-set.action-set_state_new
+                button.btn.btn-primary.btn-success.action-btn(data-action='add-from-contractor') В ассортимент
+                button.btn.btn-primary.btn-danger.action-btn(data-action='ignore') В черный список
+            .action-set.action-set_state_available
+                button.btn.btn-primary.btn-info.action-btn(data-action='actualize') Актуализировать
+            .action-set.action-set_state_missing
+                button.btn.btn-primary.btn-info.action-btn(data-action='actualize') Актуализировать
+                button.btn.btn-primary.btn-danger.action-btn(data-action='ignore') В черный список
+            .action-set.action-set_state_ignored
+                button.btn.btn-primary.btn-success.action-btn(data-action='unignore') В ассортимент
+                button.btn.btn-primary.btn-danger.action-btn(data-action='remove') Удалить
         p
-            button(class='btn btn-primary', id='sync-btn')='Синхронизация'
-            button(class='btn btn-primary', data-toggle='modal', data-target='#add-product-modal')='Добавить товар'
-            button(id='add-category', class='btn btn-primary')='Добавить категорию'
+            button#sync-btn.btn.btn-primary Синхронизация
+            button#add-product.btn.btn-primary(data-toggle='modal') Добавить товар
+            button#add-category.btn.btn-primary Добавить категорию
 
-
-    include add-product-dlg
+    include products/save-modal
     include categories/save-modal
     include wait-modal
 
-    div(class='tabbable')
-        ul(class='nav nav-tabs')
-            li(class='dropdown active nav-tab nav-tab_type_products')
-                a(class='dropdown-toggle', role='button', data-toggle='dropdown')
-                    span(class='text current-products-tab')='Новые товары'
-                    b(class='caret')
-                ul(class='dropdown-menu', role='menu')
+    .tabbable
+        ul.nav.nav-tabs
+            li.dropdown.active.nav-tab.nav-tab_type_products
+                a.dropdown-toggle(role='button', data-toggle='dropdown')
+                    span.text.current-products-tab Новые товары
+                    b.caret
+                ul.dropdown-menu(role='menu')
                     li
-                        a(class='dropdown-item products-tab', products='published')='Опубликованные товары'
+                        a.dropdown-item.products-tab(products='published') Опубликованные товары
                     li
-                        a(class='dropdown-item products-tab', products='unpublished')='Неопубликованные товары'
+                        a.dropdown-item.products-tab(products='unpublished') Неопубликованные товары
                     li
-                        a(class='dropdown-item products-tab', products='new')='Новые товары'
+                        a.dropdown-item.products-tab(products='new') Новые товары
                     li
-                        a(class='dropdown-item products-tab', products='missing')='Нет в наличии у поставщика'
+                        a.dropdown-item.products-tab(products='missing') Нет в наличии у поставщика
                     li
-                        a(class='dropdown-item products-tab', products='available')='Доступные у поставщика'
+                        a.dropdown-item.products-tab(products='available') Доступные у поставщика
                     li
-                        a(class='dropdown-item products-tab', products='ignored')='Черный список'
-            li(class='nav-tab nav-tab_type_categories')
-                a(href='#categories')='Категории'
-            li(class='nav-tab nav-tab_type_analysis')
-                a(href='#analysis')='Анализ ассортимента'
+                        a.dropdown-item.products-tab(products='ignored') Черный список
+            li.nav-tab.nav-tab_type_categories
+                a(href='#categories') Категории
+            li.nav-tab.nav-tab_type_analysis
+                a(href='#analysis') Анализ ассортимента
 
-        div(class='tab-content')
-            div(class='tab-pane active tab-pane_type_products')
-                button(class='btn select-all')='Выбрать все'
-                button(class='btn deselect-all')='Сбросить'
-                table(class='data-table table table-striped table-bordered')
+        .tab-content
+            .tab-pane.active.tab-pane_type_products
+                button.btn.select-all Выбрать все
+                button.btn.deselect-all Сбросить
+                table.data-table.table.table-striped.table-bordered
                     thead
                         tr
-                            th(width='5%')='Артикул'
-                            th(width='26%')='Название'
-                            th(width='9%')='Цена (опт)'
-                            th(width='9%')='Цена (рек)'
-                            th(width='10%')='Цена (розн)'
-                            th(width='22%')='Категория'
-                            th(width='5%')='Приоритет'
-                            th(width='2%')='Наличие'
-                            th(width='10%')=''
-                            th(width='2%')=''
+                            th(width='4%') Артикул
+                            th(width='27%') Название
+                            th(width='9%') Цена(опт)
+                            th(width='9%') Цена(рек)
+                            th(width='10%') Цена(розн)
+                            th(width='20%') Категория
+                            th(width='7%') Поставщик
+                            th(width='5%') Приоритет
+                            th(width='2%') Наличие
+                            th(width='5%')
+                            th(width='2%')
                     tbody
                     tfoot
                         tr
-                            th='Артикул'
-                            th='Название'
-                            th='Цена (опт)'
-                            th='Цена (рек)'
-                            th='Цена (розн)'
-                            th='Категория'
-                            th='Приоритет'
-                            th='Наличие'
-                            th=''
-                            th=''
+                            th Артикул
+                            th Название
+                            th Цена(опт)
+                            th Цена(рек)
+                            th Цена(розн)
+                            th Категория
+                            th Поставщик
+                            th Приоритет
+                            th Наличие
+                            th
+                            th
 
-            div(class='tab-pane tab-pane_type_categories')
+            .tab-pane.tab-pane_type_categories
                 include categories/categories
 
-            div(class='tab-pane tab-pane_type_analysis')
-                h1(class='nav-header')='Анализ ассортимента'
+            .tab-pane.tab-pane_type_analysis
+                h1.nav-header Анализ ассортимента

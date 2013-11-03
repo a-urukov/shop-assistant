@@ -31,7 +31,7 @@ Validate.mustNumber = function(name, value) {
  * @returns {String} ошибку валидации или пустую строку, если все ок
  */
 Validate.mustUrlPath = function(name, value) {
-    return value && (typeof value == 'string' && value.match(/^[A-Za-z-_\d]+$/) ?
+    return value && (typeof value == 'string' && value.match(/^[A-Za-z-_\d]+$/)) ?
         '' :
-        'Поле ' + name + ' должно содержать только латиснкие буквы!')
+        'Поле ' + name + ' должно содержать только латиснкие буквы!';
 }

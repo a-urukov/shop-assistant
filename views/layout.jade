@@ -18,7 +18,7 @@ html.no-js(lang='en')
         meta(name="viewport", content='width=device-width, initial-scale=1')
         link(rel='stylesheet', href='/css/bundles/vendor.min.css')
         link(rel='stylesheet', href='/css/bundles/admin.min.css')
-        script(src='//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.js')
+        script(src='/js/libs/jquery-1.10.2.js')
 
     body
         block header
@@ -34,7 +34,9 @@ html.no-js(lang='en')
         script(src='/js/admin-page/model.js')
         script(src='/js/admin-page/view.js')
         script(src='/js/admin-page/router.js')
+        script(src='/js/admin-page/abstract-save-view.js')
         script(src='/js/product/model.js')
+        script(src='/js/product/save-view.js')
         script(src='/js/category/model.js')
         script(src='/js/category/view.js')
         script(src='/js/category/save-view.js')

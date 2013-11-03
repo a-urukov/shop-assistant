@@ -91,4 +91,12 @@ ProductsController.prototype.groupАctions = function(action, ids, callback) {
     }
 };
 
+ProductsController.prototype.saveProduct = function(product, callback) {
+    typeof product.categories === 'string'&& (product.categories = product.categories.split(','));
+    this._data.saveProduct(product, callback);
+}
+
+// TODO пофиксить вывод данных в таблицу
+// После добваления товара переходить на вкладку (в соответствии с категорией)
+
 exports.ProductsController = ProductsController;

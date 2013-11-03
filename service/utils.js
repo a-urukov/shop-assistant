@@ -218,6 +218,7 @@ function toDataTable(products) {
                 product.recPrice || '-',
                 product.price || '-',
                 'нет категории',
+                'Эврика',
                 '<span class="label ' + label + '">' + priority + '</span>',
                 product.available ? '+' : '-',
                 '<button class="btn btn-info" data-product-id="' + id + '">Редактировать</button>',

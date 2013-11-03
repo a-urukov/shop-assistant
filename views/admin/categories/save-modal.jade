@@ -1,36 +1,35 @@
-div(class='modal hide fade', id='save-category-modal', data-keyboard='true', role='dialog', aria-labelledby='save-category-label')
-    div(class='modal-header')
-        h3(id='save-category-label')='Редактирование категорий'
-    div(class='modal-body')
+#save-category-modal.modal.hide.fade(data-keyboard='true', role='dialog', aria-labelledby='save-category-label')
+    .modal-header
+        h3#save-category-label Редактирование категорий
+    .modal-body
         form
-            div(class='error row-fluid')
-                div(class='span12 bgcolor')
-                    div(class='alert alert-error')='Настал пиздец'
-            div(class='row-fluid')
-                div(class='span8')
-                    label='Название:'
-                    input(class='span12', type='text', data-model-field='name')
-                div(class='span4')
-                    label='URL:'
-                    input(class='span12', type='text', data-model-field='url')
-            div(class='row-fluid')
-                div(class='span8')
-                    label='Заголовок в меню:'
-                    input(class='span12', type='text', data-model-field='nameInMenu')
-                div(class='span4')
-                    label='Позиция в меню:'
-                    input(class='span12', type='text', data-model-field='posInMenu')
-            div(class='row-fluid')
-                label(class='control-label')='Описание:'
-                textarea(class='span12', rows='5', data-model-field='description')
-            div(class='row-fluid')
-                label(class='control-label')='Родительская категория:'
-                input(class='select2 span12', type='hidden', data-model-field='parentId')
-            div(class='row-fluid checkbox-wrap')
-                label(class='checkbox')='Опубликована'
+            .error.row-fluid
+                .span12.bgcolor
+                    .alert.alert-error
+            .row-fluid
+                .span8
+                    label Название:
+                    input.span12(type='text', data-model-field='name')
+                .span4
+                    label URL:
+                    input.span12(type='text', data-model-field='url')
+            .row-fluid
+                .span8
+                    label Заголовок в меню:
+                    input.span12(type='text', data-model-field='nameInMenu')
+                .span4
+                    label Позиция в меню:
+                    input.span12(type='text', data-model-field='posInMenu')
+            .row-fluid
+                label.control-label Описание:
+                textarea.span12(rows='5', data-model-field='description')
+            .row-fluid
+                label.control-label Родительская категория:
+                input.select2.span12(type='hidden', data-model-field='parentId')
+            .row-fluid.checkbox-wrap
+                label.checkbox Опубликована
                     input(type='checkbox', data-model-field='published')
 
-
-    div(class='modal-footer')
-        button(id='save-category', class='btn btn-primary')='OK'
-        button(class='btn btn-primary', data-dismiss='modal', aria-hidden='true')='Отмена'
+    .modal-footer
+        button.submit-btn.btn.btn-primary OK
+        button.btn.btn-primary(data-dismiss='modal', aria-hidden='true') Отмена
