@@ -1,4 +1,4 @@
-CategoryView = Backbone.View.extend({
+exports.CategoryView = Backbone.View.extend({
 
     initialize: function(options) {
         this.saveView = options.saveView;
@@ -6,7 +6,7 @@ CategoryView = Backbone.View.extend({
         var editButton,
             el = this.$el;
 
-        this.$('.b-category__edit').each(function(n, v) {
+        this.$('.b-category__edit').each(function() {
             var $this = $(this);
 
             el.is($this.closest('.b-category')) && (editButton = $this);

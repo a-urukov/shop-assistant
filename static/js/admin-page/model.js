@@ -1,4 +1,4 @@
-var AdminPageModel = Backbone.Model.extend({
+exports.AdminPageModel = Backbone.Model.extend({
 
     default: {
         lastUpdate: new Date()

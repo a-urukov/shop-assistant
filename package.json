@@ -18,7 +18,9 @@
         "should": "*",
         "grunt": "~0.4.1",
         "grunt-contrib-cssmin": "~0.6.2",
-        "grunt-contrib-concat": "~0.3.x"
+        "grunt-contrib-concat": "~0.3.x",
+        "grunt-browserify": "~1.2.11",
+        "grunt-contrib-uglify": "~0.2.5"
     },
     "engine": "node >= 0.6.6",
     "subdomain": "surprise",

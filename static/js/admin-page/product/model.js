@@ -1,4 +1,6 @@
-ProductModel = Backbone.Model.extend({
+var Validate = require('../validate').Validate;
+
+exports.ProductModel = Backbone.Model.extend({
 
     idAttribute: '_id',
 

@@ -1,4 +1,11 @@
-var AdminPageView = Backbone.View.extend({
+var SaveCategoryView = require('./category/save-view').SaveCategoryView,
+    CategoryModel = require('./category/model').CategoryModel,
+    Categories = require('./category/collection').Categories,
+    CategoryView = require('./category/view').CategoryView,
+    SaveProductView = require('./product/save-view').SaveProductView,
+    ProductModel = require('./product/model').ProductModel;
+
+exports.AdminPageView = Backbone.View.extend({
 
     initialize: function(options) {
         _.bindAll(this, 'onModelChange');

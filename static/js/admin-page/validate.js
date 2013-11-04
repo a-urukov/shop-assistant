@@ -35,3 +35,5 @@ Validate.mustUrlPath = function(name, value) {
         '' :
         'Поле ' + name + ' должно содержать только латиснкие буквы!';
 }
+
+exports.Validate = Validate;

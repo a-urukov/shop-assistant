@@ -1,4 +1,7 @@
-var AdminPageRouter = Backbone.Router.extend({
+var AdminPageModel = require('./model').AdminPageModel,
+    AdminPageView = require('./view').AdminPageView;
+
+exports.AdminPageRouter = Backbone.Router.extend({
 
     initialize: function() {
         this.model = new AdminPageModel();
@@ -32,3 +35,5 @@ var AdminPageRouter = Backbone.Router.extend({
     }
 
 });
+
+

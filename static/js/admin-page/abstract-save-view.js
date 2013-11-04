@@ -1,4 +1,4 @@
-AbstractSaveView = Backbone.View.extend({
+exports.AbstractSaveView = Backbone.View.extend({
 
     initialize: function() {
         this.error = this.$('.error');

@@ -1,4 +1,6 @@
-Categories = Backbone.Collection.extend({
+var CategoryModel = require('./model').CategoryModel;
+
+exports.Categories = Backbone.Collection.extend({
 
     model: CategoryModel,
 

@@ -1,4 +1,6 @@
-SaveProductView = AbstractSaveView.extend({
+var AbstractSaveView = require('../abstract-save-view').AbstractSaveView;
+
+exports.SaveProductView = AbstractSaveView.extend({
 
     inputs: ['name', 'contractor', 'article', 'url', 'priority', 'optPrice',
         'recPrice', 'ourPrice', 'description', 'categories',

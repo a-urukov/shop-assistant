@@ -1,4 +1,6 @@
-CategoryModel = Backbone.Model.extend({
+var Validate = require('../validate').Validate;
+
+exports.CategoryModel = Backbone.Model.extend({
 
     idAttribute: '_id',
 

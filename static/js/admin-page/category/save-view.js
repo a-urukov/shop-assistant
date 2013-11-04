@@ -1,4 +1,6 @@
-SaveCategoryView = AbstractSaveView.extend({
+var AbstractSaveView = require('../abstract-save-view').AbstractSaveView;
+
+exports.SaveCategoryView = AbstractSaveView.extend({
 
     inputs: ['name', 'url', 'description',
         'parentId', 'nameInMenu', 'posInMenu',
