@@ -193,7 +193,7 @@ function toDataTable(products) {
             var name = product.name,
                 priority = product.priority || '0',
                 label = (function() {
-                    switch (priority) {
+                    switch (+priority) {
                         case 1:
                             return '';
                         case 2:
@@ -216,12 +216,14 @@ function toDataTable(products) {
                     (product.description || 'Описание отсутствует') + '">' + name + '</a>',
                 product.optPrice || '-',
                 product.recPrice || '-',
-                product.price || '-',
-                'нет категории',
-                'Эврика',
-                '<span class="label ' + label + '">' + priority + '</span>',
+                product.ourPrice || '-',
+                product.categories ?
+                    product.categories.map(function(c) { return c.name }).join(', ') :
+                   '(нет категории)',
+                product.contractor || '–',
+                '<span class="label ' + 'label-' + label + '">' + priority + '</span>',
                 product.available ? '+' : '-',
-                '<button class="btn btn-info" data-product-id="' + id + '">Редактировать</button>',
+                '<button class="btn btn-info edit-product" data-product-id="' + id + '">Редактировать</button>',
                 '<input type="checkbox" value=' + id + ' class="product-checkbox">'
             ]
         })

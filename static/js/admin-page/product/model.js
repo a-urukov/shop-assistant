@@ -12,10 +12,12 @@ exports.ProductModel = Backbone.Model.extend({
         var attrs = this.attributes;
 
         console.log(attrs.url);
-        return Validate.isNotEmpty('name', attrs.name) || Validate.isNotEmpty('article', attrs.article) ||
-            Validate.mustUrlPath('url', attrs.url);
+        return Validate.isNotEmpty('Наименование', attrs.name) || Validate.isNotEmpty('Артикл', attrs.article) ||
+            Validate.mustUrlPath('url', attrs.url) || Validate.mustNumber('Наша цена', attrs.ourPrice) ||
+            Validate.isNotEmpty('Наша цена', attrs.ourPrice) || Validate.mustNumber('Рекомендуемая цена', attrs.recPrice) ||
+            Validate.mustNumber('Оптовая цена', attrs.optPrice);
     },
 
-    url: 'admin/products/'
+    url: 'admin/product/'
 
 });

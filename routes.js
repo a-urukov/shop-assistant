@@ -111,8 +111,16 @@ exports.setRoutes = function(server, controllers) {
         products.saveProduct(req.body, sendingCallback(res));
     });
 
-    server.post('/admin/products/', saveProduct);
-    server.put('/admin/products/', saveProduct);
+    server.get('/admin/product/:id', xhr(function(req, res, next) {
+        if (req.params.id) {
+            products.getProduct(req.params.id, sendingCallback(res));
+
+        } else {
+            next();
+        }
+    }));
+    server.post('/admin/product/', saveProduct);
+    server.put('/admin/product/', saveProduct);
 
 
     /** CONTRACTORS **/

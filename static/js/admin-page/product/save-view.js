@@ -4,12 +4,15 @@ exports.SaveProductView = AbstractSaveView.extend({
 
     inputs: ['name', 'contractor', 'article', 'url', 'priority', 'optPrice',
         'recPrice', 'ourPrice', 'description', 'categories',
+        { name: 'priority', value: 0 },
         { name: 'published', type: 'checkbox' },
         { name: 'available', type: 'checkbox' },
         { name: 'ignored', type: 'checkbox' }
     ],
 
     initialize: function(options) {
+        var saveCallback = options.saveCallback;
+
         AbstractSaveView.prototype.initialize.apply(this, arguments);
         this.getCategories = options.getCategories;
         $('.ignored-checkbox, .published-checkbox').bind('change', function(e) {
@@ -18,6 +21,12 @@ exports.SaveProductView = AbstractSaveView.extend({
             $target.prop('checked') &&
             $($target.hasClass('ignored-checkbox') ? '.published-checkbox' : '.ignored-checkbox').prop('checked', '');
         });
+
+        this.on('success-submit', function() {
+            saveCallback(this.model.get('ignored') ?
+                'ignored' :
+                this.model.get('published') ? 'published' : 'unpublished');
+        })
     },
 
     show: function(model) {
@@ -46,6 +55,14 @@ exports.SaveProductView = AbstractSaveView.extend({
                 { id: 'Эврика', text: 'Эврика' },
                 { id: 'Megamind', text: 'Megamind' }
             ]
+        });
+
+        _.find(this.inputs,function(input) {
+            return input.name == 'priority';
+        }).dom.select2({
+            data: [0, 1, 2, 3, 4, 5].map(function(val) {
+                return { id: val.toString(), text: val.toString() };
+            })
         });
     }
 });

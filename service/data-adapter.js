@@ -1,4 +1,5 @@
 var ObjectID = require('mongodb').ObjectID,
+    DBRef = require('mongodb').DBRef,
     idsFilter = function(ids) {
         return {
             _id: { $in: ids.map(function(id) { return new ObjectID(id) }) }
@@ -29,11 +30,47 @@ DataAdapter.prototype.getProducts = function(options, callback) {
     if (options && callback) {
         typeof options.published === 'boolean' && (query.published = options.published);
         typeof options.ignored === 'boolean' && (query.ignored = options.ignored);
+        typeof options._id === 'string' && (query._id = new ObjectID(options._id));
     } else if (!callback) {
         callback = options;
     }
 
-    this._products.find(query).toArray(callback);
+    var db = this._db,
+        cursor = this._products.find(query),
+        result = [],
+        product;
+
+    (function prepare() {
+        product && result.push(product);
+
+        cursor.nextObject({}, function(err, p) {
+            if ((product = p) && !err) {
+
+                if (product.categories instanceof Array) {
+                    var categories = [];
+
+                    utils.sync(product.categories, {
+                        method: db.dereference,
+                        ctx: db,
+                        methodCallback: function(err, category) {
+                            category && categories.push({
+                                _id: category._id,
+                                name: category.name
+                            });
+                        },
+                        callback: function() {
+                            product.categories = categories;
+                            prepare();
+                        }
+                    });
+                } else {
+                    prepare();
+                }
+            } else {
+                callback(err, result);
+            }
+        });
+    })();
 }
 
 /**
@@ -52,6 +89,7 @@ DataAdapter.prototype.saveProduct = function(product, callback) {
     }
 
     this._products.save({
+        _id: product._id && new ObjectID(product._id),
         name: name,
         article: product.article,
         contractor: product.contractor,
@@ -60,7 +98,9 @@ DataAdapter.prototype.saveProduct = function(product, callback) {
         recPrice: +product.recPrice,
         ourPrice: +product.ourPrice,
         description: product.description,
-        categories: product.categories,
+        categories: product.categories && product.categories.map(function(id) {
+            return new DBRef('categories', new ObjectID(id));
+        }),
         priority: +product.priority,
         published: !!product.published && !product.ignored,
         ignored: !!product.ignored,

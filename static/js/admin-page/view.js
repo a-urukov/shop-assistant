@@ -18,6 +18,13 @@ exports.AdminPageView = Backbone.View.extend({
             el: $('#save-product-modal'),
             getCategories: function() {
                 return this.model.get('categories');
+            }.bind(this),
+            saveCallback: function(state) {
+                if (state == this.model.get('state')) {
+                    this._showProductsTab();
+                } else {
+                    state && this.model.set({ tab: 'products', state: state });
+                }
             }.bind(this)
         });
     },
@@ -80,6 +87,27 @@ exports.AdminPageView = Backbone.View.extend({
         // Добавить товар
         'click #add-product': function() {
             this.saveProductView.show(new ProductModel());
+        },
+
+        'click .edit-product': function(e) {
+            var id = $(e.target).attr('data-product-id');
+
+            $.ajax({
+                url: '/admin/product/' + id
+            })
+            .done(function(data) {
+                var categories = data.categories;
+
+                categories && (data.categories = categories.map(function(category) {
+
+                    return category._id;
+                }));
+
+                this.saveProductView.show(new ProductModel(data));
+                }.bind(this))
+            .fail(function() {
+                alert('Проблема на стороне сервера')
+            })
         },
 
         // Кнопка выбрать все
@@ -180,7 +208,6 @@ exports.AdminPageView = Backbone.View.extend({
      */
     _showProductsTab: function() {
         var state = this.model.get('state');
-
 
         if (['published', 'unpublished', 'new', 'available', 'missing', 'ignored'].indexOf(state) === -1) return;
 

@@ -53,6 +53,13 @@ ProductsController.prototype.getIgnored = function(callback) {
     });
 };
 
+ProductsController.prototype.getProduct = function(id, callback) {
+    this._data.getProducts({ _id: id }, function(err, products) {
+        callback(err && ('Can\'t get product: ' + JSON.stringifyx(err)), products && products[0]);
+    });
+};
+
+
 /**
  * Групповые действия над товарами
  * @param {String} action ид экшена
@@ -95,8 +102,5 @@ ProductsController.prototype.saveProduct = function(product, callback) {
     typeof product.categories === 'string'&& (product.categories = product.categories.split(','));
     this._data.saveProduct(product, callback);
 }
-
-// TODO пофиксить вывод данных в таблицу
-// После добваления товара переходить на вкладку (в соответствии с категорией)
 
 exports.ProductsController = ProductsController;

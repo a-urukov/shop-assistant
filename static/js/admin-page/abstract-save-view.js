@@ -24,7 +24,7 @@ exports.AbstractSaveView = Backbone.View.extend({
         this.inputs && this.inputs.forEach(function(input) {
             if (!input.dom) return;
 
-            var val = this.model.get(input.name);
+            var val = this.model.get(input.name) || input.value;
 
             if (input.type == 'checkbox') {
                 input.dom.prop('checked', val ? 'checked' : '');
@@ -52,6 +52,7 @@ exports.AbstractSaveView = Backbone.View.extend({
             this.$('.modal-body').scrollTop(0);
         } else {
             this.$el.modal('hide');
+            this.trigger('success-submit');
         }
     }
 
