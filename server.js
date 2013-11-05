@@ -7,6 +7,7 @@ NotFound = function(msg) {
 
 var connect = require('connect'),
     express = require('express'),
+    config = require('./config'),
     server = express(),
     MongoClient = require('mongodb').MongoClient,
     dataAdapter,
@@ -27,7 +28,7 @@ server.configure(function() {
     server.use(server.router);
 });
 
-MongoClient.connect('mongodb://127.0.0.1:27017/surprise', {}, function(err, db) {
+MongoClient.connect(config.mongoConnectionString, {}, function(err, db) {
 
     if (err) throw new Error(JSON.stringify(err));
 
