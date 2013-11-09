@@ -1,0 +1,339 @@
+@font-face
+{
+    font-family: FranklinGothic;
+    src: url('../fonts/franklin4.ttf');
+}
+
+.b-header
+{
+    font-size: 20px;
+    font-weight: normal;
+    font-family: FranklinGothic, Arial, serif;
+
+    background-color: #ce123a;
+    color: #fff;
+}
+
+.b-navigation
+{
+    position: relative;
+}
+
+.b-menu
+{
+    margin: 16px 0 0;
+}
+
+.b-menu__item
+{
+    font: bold 13px arial, serif;
+
+    float: left;
+
+    margin-right: 20px;
+}
+
+.b-menu__item-link
+{
+    color: #666;
+}
+
+.b-menu__item-link:hover
+{
+    color: #00aeef;
+    text-decoration: none;
+}
+
+.b-header__promo-text-wrap
+{
+    background-color: #9e0018;
+}
+
+.b-header__promo-text
+{
+    font-size: 18px;
+    font-weight: normal;
+    font-family: FranklinGothic, Arial, serif;
+
+    color: #fff;
+}
+
+img
+{
+    position: relative;
+    left: -56px;
+}
+
+.b-search
+{
+    position: absolute;
+    right: 0;
+    top: 10px;
+}
+
+.b-shopping-cart
+{
+    margin: 5px 0;
+    padding: 15px 0 15px 25px;
+
+    border-left: 1px solid #900D28;
+}
+
+.b-shopping-cart__link
+{
+    position: relative;
+    top: 8px;
+
+    color: #fff;
+}
+
+.b-shopping-cart__icon
+{
+    display: inline-block;
+
+    height: 15px;
+    width: 20px;
+    margin-right: 5px;
+
+    background: url('../img/sprite-jg.png');
+}
+
+.b-phone
+{
+    font-size: 30px;
+    padding: 25px 25px 0;
+}
+
+.b-main-categories
+{
+    position: relative;
+
+    margin: 20px 0 0;
+    font-size: 21px;
+
+    font-family: FranklinGothic, Arial, serif;
+}
+
+.b-main-categories__item
+{
+    float: left;
+
+    margin-right: 13px;
+
+    color: #000;
+}
+
+.b-main-categories__item-divider
+{
+    font-weight: normal;
+
+    padding-left: 11px;
+
+    color: #cdcdcd;
+}
+
+.b-main-categories__item-link
+{
+    padding: 5px 0 10px;
+
+    color: #000;
+}
+
+.b-main-categories__item-link:hover
+{
+    color: #00aeef;
+    text-decoration: none;
+}
+
+.b-main-categories__dropdown
+{
+    display: none;
+
+    position: absolute;
+    z-index: 10;
+    top: 27px;
+    left: 0;
+
+    margin-left: 0;
+
+    background-color: #fff;
+}
+
+.b-main-categories__dropdown-content
+{
+    padding: 17px 20px;
+    border: 5px solid #ccc;
+    border-top: 1px dotted #ccc;
+}
+
+.b-subcategories
+{
+    float: left;
+
+    margin: 0 25px 0 0;
+    border-right: 1px solid #e5e5e5;
+}
+
+.b-subcategories__title
+{
+    font-weight: normal;
+    font-size: 15px;
+
+    position: relative;
+    top: -5px;
+    display: inline-block;
+
+    border-bottom: 1px dotted #000;
+    margin: 0 0 7px 0;
+
+    text-transform: uppercase;
+}
+
+.b-subcategories__list
+{
+    font: 12px Arial, serif;
+
+    width: 170px;
+    margin-left: 0;
+}
+
+.b-subcategories__item-link,
+.b-subcategories__item-link:hover
+{
+    color: #333;
+}
+
+.b-page
+{
+    margin-top: 37px;
+}
+
+.b-left-menu
+{
+    font: 13px Arial, serif;
+
+    margin: 0;
+
+    color: #000;
+}
+
+.b-left-menu__title
+{
+    font: normal 20px FranklinGothic, Arial, serif;
+
+    position: relative;
+    top: -5px;
+
+    border-bottom: 1px dotted #000;
+    display: inline-block;
+    margin: 0;
+
+    text-transform: uppercase;
+}
+
+.b-left-menu__list
+{
+    margin: 3px 0 10px 13px;
+}
+
+.b-left-menu__list_type_root
+{
+    margin-left: 0;
+}
+
+.b-left-menu__list_type_root > .b-left-menu__item
+{
+    margin-top: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.b-left-menu__item
+{
+    font-weight: normal;
+    line-height: 22px;
+}
+
+.b-left-menu__item_has-inner_yes
+{
+    font-weight: bold;
+}
+
+.b-gallery
+{
+    position: relative;
+    left: 4px;
+
+    padding-left: 2px;
+}
+
+.b-gallery__row .b-gallery__holder,
+.b-gallery__row .b-gallery__cell
+{
+    float: left;
+}
+
+.b-gallery__row_order_reverse .b-gallery__holder,
+.b-gallery__row_order_reverse .b-gallery__cell
+{
+    float: right;
+}
+
+.b-gallery__cell
+{
+    margin: 0 4px 4px 0;
+    height: 238px;
+    width: 238px;
+
+    background: #eee;
+}
+
+.b-gallery__holder
+{
+    width: 484px;
+}
+
+.b-gallery__cell_size_big
+{
+    height: 480px;
+    width: 480px;
+}
+
+.b-category-info
+{
+    display: table-cell;
+    vertical-align: middle;
+
+    padding: 20px;
+
+    width: 440px;
+    height: 440px;
+
+    background: #0072cf;
+    color: #fff;
+}
+
+.b-category-info__title
+{
+    font: normal 30px FranklinGothic, Arial, serif;
+}
+
+.b-category-info__link
+{
+    border-bottom: 1px dotted #fff;
+
+    color: #fff;
+}
+
+.b-category-info__link:hover,
+.b-category-info__link:visited
+{
+    text-decoration: none;
+    color: #fff;
+}
+
+.b-category-info__text
+{
+    font: 13px Arial, serif;
+    line-height: 21px;
+
+}

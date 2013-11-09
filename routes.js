@@ -102,8 +102,15 @@ exports.setRoutes = function(server, controllers) {
         categories.saveCategory(req.body, sendingCallback(res));
     });
 
-    server.post('/admin/categories/', saveCategory);
-    server.put('/admin/categories/', saveCategory);
+    server.post('/admin/category/', saveCategory);
+    server.put('/admin/category/', saveCategory);
+    server.del('/admin/category/:id', xhr(function(req, res, next) {
+        if (req.params.id) {
+            categories.removeCategory(req.params.id, sendingCallback(res));
+        } else {
+            next();
+        }
+    }));
 
     /** PRODUCTS **/
 
@@ -114,7 +121,6 @@ exports.setRoutes = function(server, controllers) {
     server.get('/admin/product/:id', xhr(function(req, res, next) {
         if (req.params.id) {
             products.getProduct(req.params.id, sendingCallback(res));
-
         } else {
             next();
         }

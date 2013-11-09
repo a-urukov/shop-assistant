@@ -149,21 +149,30 @@ DataAdapter.prototype.saveCategory = function(category, callback) {
     }, callback);
 }
 
-/**
- * Обновление цены и наличия
- * @param product
- * @param callback
- */
-DataAdapter.prototype.updatePriceAndAvailability = function(product, callback) {
-    var price = utils.getOurPrice(product.price);
+//TODO  доделать удаление
+DataAdapter.prototype.removeCategory = function(id, callback) {
+    var _this = this;
 
-    this._products.update({ article: product.article }, {
-        $set: {
-            price: utils.getOurPrice(price),
-            available: product.available && price
-        }
-    }, callback);
-};
+    id = new ObjectID(id);
+
+    this._products.remove(id, function(err) {
+        if (err) { callback(err); return; }
+
+        _this._categories.find({ parentId: id }, { _id: 1 }).toArray(function(err, inner) {
+            if (err || !inner || !inner.length) { callback(err); return; }
+
+            inner = inner.map(function(c) { return c._id });
+            utils.sync(inner, {
+                method: _this.removeCategory,
+                ctx: _this,
+                callback: callback
+            });
+
+        });
+    });
+
+    //this._products.find({ 'categories.$id': id }); // научиться выпиливать из массива категорий в продукте
+}
 
 /**
  * Получение товаров поставщиков
