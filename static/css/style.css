@@ -1,3 +1,13 @@
+body
+{
+    min-width: 1000px;
+}
+
+li
+{
+    list-style: none;
+}
+
 @font-face
 {
     font-family: FranklinGothic;
@@ -74,7 +84,7 @@ img
 .b-shopping-cart
 {
     margin: 5px 0;
-    padding: 15px 0 15px 25px;
+    padding: 15px 0 15px 14px;
 
     border-left: 1px solid #900D28;
 }
@@ -82,9 +92,15 @@ img
 .b-shopping-cart__link
 {
     position: relative;
-    top: 8px;
+    top: 7px;
 
     color: #fff;
+}
+
+.b-shopping-cart__link:hover
+{
+    color: #fff;
+    text-decoration: none;
 }
 
 .b-shopping-cart__icon
@@ -92,16 +108,16 @@ img
     display: inline-block;
 
     height: 15px;
-    width: 20px;
-    margin-right: 5px;
+    width: 22px;
+    margin: 0 5px;
 
-    background: url('../img/sprite-jg.png');
+    background: url('../images/sprite-jg.png');
 }
 
 .b-phone
 {
-    font-size: 30px;
-    padding: 25px 25px 0;
+    font-size: 27px;
+    padding: 25px 13px 0;
 }
 
 .b-main-categories
@@ -109,7 +125,7 @@ img
     position: relative;
 
     margin: 20px 0 0;
-    font-size: 21px;
+    font-size: 22px;
 
     font-family: FranklinGothic, Arial, serif;
 }
@@ -118,7 +134,7 @@ img
 {
     float: left;
 
-    margin-right: 13px;
+    margin-right: 11px;
 
     color: #000;
 }
@@ -127,7 +143,7 @@ img
 {
     font-weight: normal;
 
-    padding-left: 11px;
+    padding-left: 12px;
 
     color: #cdcdcd;
 }
@@ -260,10 +276,7 @@ img
 
 .b-gallery
 {
-    position: relative;
-    left: 4px;
 
-    padding-left: 2px;
 }
 
 .b-gallery__row .b-gallery__holder,
@@ -281,21 +294,21 @@ img
 .b-gallery__cell
 {
     margin: 0 4px 4px 0;
-    height: 238px;
-    width: 238px;
+    height: 180px;
+    width: 180px;
 
     background: #eee;
 }
 
 .b-gallery__holder
 {
-    width: 484px;
+    width: 368px;
 }
 
 .b-gallery__cell_size_big
 {
-    height: 480px;
-    width: 480px;
+    height: 364px;
+    width: 364px;
 }
 
 .b-category-info

@@ -99,7 +99,7 @@ ProductsController.prototype.groupАctions = function(action, ids, callback) {
 };
 
 ProductsController.prototype.saveProduct = function(product, callback) {
-    typeof product.categories === 'string'&& (product.categories = product.categories.split(','));
+    product.categories && typeof product.categories === 'string'&& (product.categories = product.categories.split(','));
     this._data.saveProduct(product, callback);
 }
 

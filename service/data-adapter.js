@@ -88,6 +88,7 @@ DataAdapter.prototype.saveProduct = function(product, callback) {
         name = name.replace(caps, caps[0].toUpperCase() + caps.substr(1).toLowerCase());
     }
 
+
     this._products.save({
         _id: product._id && new ObjectID(product._id),
         name: name,

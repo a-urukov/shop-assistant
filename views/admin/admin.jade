@@ -1,5 +1,8 @@
 extends ../layout
 
+block css
+    link(rel='stylesheet', href='/css/bundles/admin.min.css')
+
 block content
     .hero-unit
         h1 Анализ ассортимента
@@ -94,5 +97,5 @@ block content
             .tab-pane.tab-pane_type_analysis
                 h1.nav-header Анализ ассортимента
 
-block
+block script
     script(src='/js/bundles/admin.js')
