@@ -1,5 +1,4 @@
-var libxmljs = require('libxmljs'),
-    Iconv = require('iconv').Iconv,
+var iconv = require('iconv-lite'),
     http = require('http'),
     Buffer = require('buffer').Buffer;
 
@@ -22,9 +21,7 @@ Contractor.prototype.downloadPriceList = function(callback) {
 
         if (err) { callback(err, null); return; }
 
-        _this._parseXml(xml, function(data) {
-            callback(null, data);
-        });
+        _this._parseXml(xml, callback);
     });
 }
 
@@ -35,12 +32,12 @@ Contractor.prototype.downloadPriceList = function(callback) {
  */
 Contractor.prototype._getXml = function(callback) {
     var xmlData = '',
-        converter = new Iconv('windows-1251', 'utf-8'),
+
         req = http.request(this._requestOptions, function(res) {
 
             res.setEncoding('binary');
 
-            res.on('data', function(chunk) { xmlData += converter.convert(new Buffer(chunk, 'binary')).toString() });
+            res.on('data', function(chunk) { xmlData += iconv.decode(new Buffer(chunk, 'binary'), 'win1251') });
 
             res.on('end', function() { callback(null, xmlData) });
 
@@ -57,18 +54,27 @@ Contractor.prototype._getXml = function(callback) {
  * @private
  */
 Contractor.prototype._parseXml = function(xml, callback) {
+    var parser = utils.getXmlParser(),
+        offer,
+        products = [];
 
-    var xmlDoc = libxmljs.parseXml(xml.replace('windows-1251', 'utf-8'));
+    while (offer = parser('offer', xml, true)) {
+        var name = parser('name', offer.content),
+            article = parser('article', offer.content),
+            price = parser('price', offer.content);
 
-    callback(xmlDoc.get('//offers').find('offer').map(function(offer) {
-        return {
-            name: offer.get('name').text(),
-            price: offer.get('price').text(),
-            article: offer.get('article').text(),
-            description: offer.get('description').text(),
-            available: offer.attr('available') && offer.attr('available').value() == 'true'
-        };
-    }));
+        name && article && products.push({
+            name: name.content,
+            article: article.content,
+            price: price && price.content,
+            available: offer.attrs && (offer.attrs.available === 'true')
+        });
+
+    }
+
+    callback(null, products);
 }
 
 exports.Contractor = Contractor;
+
+

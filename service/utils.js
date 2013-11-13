@@ -287,6 +287,34 @@ MultiQuery.prototype.terminate = function() {
     this._callback(this._errors);
 };
 
+/**
+ * Возвращает простой парсер xml, принимает тег и строку xml, возвращает аттрибуты и контент
+ * @returns {Function}
+ */
+function getXmlParser() {
+    var regs = {},
+        attrReg = /([A-z]+)="(\S+)"/gi
+
+    return function(tag, str, multi) {
+        if (!regs[tag]) (regs[tag] = new RegExp('(<' + tag + '>|<' + tag + '[^A-z1-9>]+(\.*?)>)((\.|\n)*?)</' + tag + '>', 'i' + (multi ? 'g' : '')));
+
+        var res = regs[tag].exec(str);
+
+        return res && {
+            attrs: res[2] && (function(str) {
+                var result = {},
+                    attr;
+
+                while (attr = attrReg.exec(str)) {
+                    attr[1] && (result[attr[1]] = attr[2]);
+                }
+
+                return result;
+            })(res[2]),
+            content: res[3]
+        }
+    }
+}
 
 exports.TimeMetrics = TimeMetrics;
 exports.MultiQuery = MultiQuery;
@@ -298,5 +326,6 @@ exports.utils = {
     downloadFile: downloadFile,
     toDataTable: toDataTable,
     clone: clone,
-    nameToUrl: nameToUrl
+    nameToUrl: nameToUrl,
+    getXmlParser: getXmlParser
 };
