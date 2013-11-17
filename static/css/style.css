@@ -224,16 +224,26 @@ img
     margin-top: 37px;
 }
 
+.b-content
+{
+    float: left;
+
+    width: 748px;
+}
+
 .b-left-menu
 {
     font: 13px Arial, serif;
 
-    margin: 0;
+    float: left;
+
+    margin: 0 20px 0 0;
+    width: 172px;
 
     color: #000;
 }
 
-.b-left-menu__title
+.b-left-menu__header
 {
     font: normal 20px FranklinGothic, Arial, serif;
 
@@ -249,7 +259,9 @@ img
 
 .b-left-menu__list
 {
-    margin: 3px 0 10px 13px;
+    margin: 3px 0 5px 13px;
+
+    background-color: #fff;
 }
 
 .b-left-menu__list_type_root
@@ -259,14 +271,42 @@ img
 
 .b-left-menu__list_type_root > .b-left-menu__item
 {
-    margin-top: 10px;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
     border-bottom: 1px solid #ccc;
 }
 
 .b-left-menu__item
 {
     font-weight: normal;
-    line-height: 22px;
+    padding: 3px 0;
+
+    position: relative;
+}
+
+.b-left-menu__item_state_current > .b-left-menu__item-title
+{
+    position: relative;
+    left: 0;
+    right: 0;
+    background-color: #eee;
+}
+
+.b-left-menu__item-title
+{
+    display: block;
+
+    margin-left: -3px;
+    padding: 0 11px 0 3px;
+
+    color: #333;
+}
+
+.b-left-menu__item-title:hover
+{
+    text-decoration: none;
+    color: #00aeef;
+    cursor: pointer;
 }
 
 .b-left-menu__item_has-inner_yes
@@ -274,9 +314,48 @@ img
     font-weight: bold;
 }
 
+.b-left-menu__expand,
+.b-left-menu__collapse
+{
+    font-weight: normal;
+    font-size: 18px;
+
+    position: absolute;
+    right: 0;
+    top: 0;
+
+    padding: 3px;
+
+    color: #00aeef;
+    cursor: pointer;
+}
+
+.b-left-menu__collapse
+{
+    top: -1px;
+}
+
+.b-left-menu__collapse,
+.b-left-menu__item > .b-left-menu__list
+{
+    display: none;
+}
+
+.b-left-menu__item_expanded_yes > .b-left-menu__collapse,
+.b-left-menu__item_expanded_yes > .b-left-menu__list
+{
+   display: block;
+}
+
+.b-left-menu__item_expanded_yes > .b-left-menu__expand
+{
+    display: none;
+}
+
 .b-gallery
 {
-
+    position: relative;
+    right: -4px;
 }
 
 .b-gallery__row .b-gallery__holder,
@@ -294,21 +373,21 @@ img
 .b-gallery__cell
 {
     margin: 0 4px 4px 0;
-    height: 180px;
-    width: 180px;
+    height: 183px;
+    width: 183px;
 
     background: #eee;
 }
 
 .b-gallery__holder
 {
-    width: 368px;
+    width: 374px;
 }
 
 .b-gallery__cell_size_big
 {
-    height: 364px;
-    width: 364px;
+    height: 370px;
+    width: 370px;
 }
 
 .b-category-info
@@ -316,10 +395,10 @@ img
     display: table-cell;
     vertical-align: middle;
 
-    padding: 20px;
+    padding: 10px 15px;
 
-    width: 440px;
-    height: 440px;
+    width: 340px;
+    height: 350px;
 
     background: #0072cf;
     color: #fff;
@@ -327,7 +406,7 @@ img
 
 .b-category-info__title
 {
-    font: normal 30px FranklinGothic, Arial, serif;
+    font: normal 23px FranklinGothic, Arial, serif;
 }
 
 .b-category-info__link
@@ -348,5 +427,4 @@ img
 {
     font: 13px Arial, serif;
     line-height: 21px;
-
 }

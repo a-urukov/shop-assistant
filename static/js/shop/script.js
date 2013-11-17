@@ -16,5 +16,18 @@ $(function() {
             $(this)
                 .data({ preventShow: true })
                 .find('.b-main-categories__dropdown').hide();
-        })
+        });
+
+    $('.b-left-menu__expand, .b-left-menu__collapse').bind('click', function() {
+        var item = $(this).parent('.b-left-menu__item');
+
+        item.children('.b-left-menu__list').slideToggle(200);
+
+        $(this).parent('.b-left-menu__item').toggleClass('b-left-menu__item_expanded_yes')
+    });
+
+    var current = $('.b-left-menu__item_state_current');
+
+    current.parents('.b-left-menu__item').addClass('b-left-menu__item_expanded_yes');
+    current.addClass('b-left-menu__item_expanded_yes');
 });

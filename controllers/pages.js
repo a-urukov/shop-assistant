@@ -11,4 +11,12 @@ PagesController.prototype.adminPage = function(callback) {
     });
 };
 
+PagesController.prototype.shopPage = function(callback) {
+    this._data.getCategories(function(err, categories) {
+        callback(err, {
+            categories: categories
+        });
+    });
+};
+
 exports.PagesController = PagesController;

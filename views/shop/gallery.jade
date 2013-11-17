@@ -1,25 +1,28 @@
+mixin product(product)
+    - if (product) {
+        div=product.name
+    -}
+
 .b-gallery
-    .b-gallery__row.clearfix
-        .b-gallery__holder.clearfix
-            .b-gallery__cell.b-product Товар 1
-            .b-gallery__cell.b-product Товар 2
-            .b-gallery__cell.b-product Товар 3
-            .b-gallery__cell.b-product Товар 4
-        .b-gallery__cell.b-gallery__cell_size_big
-            //.b-category-info
-            //    h1.b-category-info__title
-            //        a.b-category-info__link(href='#') Подарок мужчине на День Рождения
-            //
-            //    p.b-category-info__text
-            //        | Удивите любимого мужчину необычным подарком на День Рождения!
-            //        | В нашем магазине найдется подарок для любого мужчины: сильного и умного, веселого и серьезного, элегантного и брутального.
-            //        | Но не забываейте самого главного – каждый мужчина в душе ребенок!
+    - var products = [{ name: 'Поплавок' }, { name: 'Удочка' }, { name: 'Сачок' }, { name: 'Наживка' }, { name: 'Леска' }, { name: 'Червяк' }, { name: 'Попла1вок' }, { name: 'Удо1чка' }, { name: 'Сачок1' }, { name: 'Наживка1' }, { name: 'Леск2а' }, { name: 'Черв3як' }];
+    - var category = { title: 'Подарок мужчине на День Рождения', text: 'Удивите любимого мужчину необычным подарком на День Рождения! В нашем магазине найдется подарок для любого мужчины: сильного и умного, веселого и серьезного, элегантного и брутального. Но не забываейте самого главного – каждый мужчина в душе ребенок!' };
+    - var countRow = Math.floor((products.length + !!category) / 5) + 1;
+    - var countBig = countRow - !!category;
 
-
-    .b-gallery__row.b-gallery__row_order_reverse.clearfix
-        .b-gallery__holder.clearfix
-            .b-gallery__cell.b-product Товар 1
-            .b-gallery__cell.b-product Товар 2
-            .b-gallery__cell.b-product Товар 3
-            .b-gallery__cell.b-product Товар 4
-        .b-gallery__cell.b-gallery__cell_size_big Товар 5
+    - for (var i = 0; i < countRow; i++) {
+        div(class='b-gallery__row clearfix' + (i % 2 ? ' b-gallery__row_order_reverse' : '' ))
+            .b-gallery__holder.clearfix
+                - for (var j = 0; j < 4; j++) {
+                    .b-gallery__cell.b-product
+                        mixin product(products[i * 4 + j + countBig])
+                - }
+            .b-gallery__cell.b-gallery__cell_size_big
+                - if (category && !i) {
+                    .b-category-info
+                        h1.b-category-info__title
+                            a.b-category-info__link(href='/test')=category.title
+                        p.b-category-info__text=category.text
+                - } else {
+                    mixin product(products[i - !!category])
+                - }
+    - }

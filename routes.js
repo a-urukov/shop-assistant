@@ -29,11 +29,27 @@ exports.setRoutes = function(server, controllers) {
     /** PAGES **/
 
     server.get('/', function(req, res) {
-        res.render('index.jade', {
-            title: 'Интернет магазин – главная старница',
-            description: 'shop assistant',
-            author: 'Уруков Андрей'
+        pages.shopPage(function(err, data) {
+            res.render('index.jade', {
+                title: 'Интернет магазин – главная старница',
+                description: 'shop assistant',
+                author: 'Уруков Андрей',
+                categories: data.categories
+            });
         });
+    });
+
+    server.get('/test', function(req, res) {
+        pages.shopPage(function(err, data) {
+            res.render('index.jade', {
+                title: 'Интернет магазин – главная старница',
+                description: 'shop assistant',
+                author: 'Уруков Андрей',
+                categories: data.categories
+            });
+        });
+        
+        console.log(req.headers['referer']);
     });
 
     server.get('/admin', function(req, res) {
@@ -103,7 +119,7 @@ exports.setRoutes = function(server, controllers) {
     });
 
     server.post('/admin/category/', saveCategory);
-    server.put('/admin/category/', saveCategory);
+    server.put('/admin/category/:id', saveCategory);
     server.del('/admin/category/:id', xhr(function(req, res, next) {
         if (req.params.id) {
             categories.removeCategory(req.params.id, sendingCallback(res));
