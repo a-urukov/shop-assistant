@@ -1,4 +1,4 @@
-var utils = require('./utils.js').utils;
+var utils = require('./utils.js');
 
 function Catalog() {
 }
@@ -62,7 +62,7 @@ Catalog.getNewProducts = function(products, priceList) {
             res.push(np);
         }
     });
-
+    
     return res;
 }
 

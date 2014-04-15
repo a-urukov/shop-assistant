@@ -1,9 +1,15 @@
 var ObjectID = require('mongodb').ObjectID,
+    utils = require('./utils.js'),
     DBRef = require('mongodb').DBRef,
     idsFilter = function(ids) {
+
         return {
             _id: { $in: ids.map(function(id) { return new ObjectID(id) }) }
         };
+    },
+    idWrap = function(id) {
+
+        return typeof id === 'string' ? new ObjectID(id) : id
     };
 
 /**
@@ -31,6 +37,16 @@ DataAdapter.prototype.getProducts = function(options, callback) {
         typeof options.published === 'boolean' && (query.published = options.published);
         typeof options.ignored === 'boolean' && (query.ignored = options.ignored);
         typeof options._id === 'string' && (query._id = new ObjectID(options._id));
+
+        if (options.categoriesIds instanceof Array) {
+            query.categories = {
+                $in: options.categoriesIds.map(function(id) {
+
+                    return new DBRef('categories', idWrap(id));
+                })
+            };
+        }
+
     } else if (!callback) {
         callback = options;
     }
@@ -71,7 +87,22 @@ DataAdapter.prototype.getProducts = function(options, callback) {
             }
         });
     })();
-}
+};
+
+/**
+ * Получить все товары, включая подкатегории
+ * @param categoryId
+ * @param callback
+ */
+DataAdapter.prototype.getProductsByCategory = function(categoryId, callback) {
+    this.getCategoriesIdsByParent(categoryId, function(err, ids) {
+        if (err) {
+            callback(err);
+        } else {
+            this.getProducts({ categoriesIds: ids, published: true }, callback);
+        }
+    }.bind(this));
+};
 
 /**
  * Сохранение продукта в каталог
@@ -109,6 +140,19 @@ DataAdapter.prototype.saveProduct = function(product, callback) {
     }, callback);
 }
 
+/**
+ * Возвращает категорию по url (без подкатегорий)
+ * @param url
+ * @param callback
+ */
+DataAdapter.prototype.getCategoryByUrl = function(url, callback) {
+    this._categories.find({ url: url }).toArray(function(err, categories) { callback(err, categories && categories[0]) });
+};
+
+/**
+ *
+ * @param callback
+ */
 DataAdapter.prototype.getCategories = function(callback) {
     this._categories.find().toArray(function(err, categories) {
         if (err) {
@@ -133,7 +177,28 @@ DataAdapter.prototype.getCategories = function(callback) {
             }
         });
 
-        callback(null, roots);
+        callback(null, roots, hash);
+    });
+};
+
+/**
+ * Возвращает id всех подкатегории для категории (включая категорию)
+ * @param id
+ * @param callback
+ */
+DataAdapter.prototype.getCategoriesIdsByParent = function(id, callback) {
+    this.getCategories(function(err, categories, hash) {
+        if (err) { callback(err); return; }
+
+        var result = [],
+            category = hash[idWrap(id)];
+
+        category && (function collect(c) {
+            result.push(c._id);
+            c.children.forEach(collect);
+        })(category);
+
+        callback(null, result);
     });
 }
 
@@ -152,9 +217,8 @@ DataAdapter.prototype.saveCategory = function(category, callback) {
 
 //TODO  доделать удаление
 DataAdapter.prototype.removeCategory = function(id, callback) {
-    var _this = this;
-
-    id = new ObjectID(id);
+    var _this = this,
+        id = new ObjectID(id);
 
     this._products.remove(id, function(err) {
         if (err) { callback(err); return; }

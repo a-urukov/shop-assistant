@@ -34,7 +34,8 @@ module.exports = function(grunt) {
             vendor: {
                 src: [
                     'static/js/vendor/underscore.js', 'static/js/vendor/backbone.js',
-                    'static/js/vendor/bootstrap.js', 'static/js/vendor/select2.js', 'static/js/vendor/data-tables.js'
+                    'static/js/vendor/bootstrap.js', 'static/js/vendor/select2.js', 'static/js/vendor/data-tables.js',
+                    'static/js/vendor/file-api.js', 'static/js/vendor/file-api.exif.js'
                 ],
                 dest: 'static/js/bundles/vendor.js'
             }

@@ -1,12 +1,19 @@
 .b-left-menu
-    h3.b-left-menu__header Каталог
+    h3.b-left-menu__header= 'Каталог'
     ul.b-left-menu__list.b-left-menu__list_type_root
+        - var currentId = category && category._id.toString();
 
         - categories && categories.forEach(function render(category) {
             - var hasChildren = category.children && category.children.length;
+            - var isCurrent = category._id.toString() == currentId;
+            - var classes = 'b-left-menu__item';
 
-            li(class='b-left-menu__item' + (hasChildren ? ' b-left-menu__item_has-inner_yes' : '') + (category.id ? ' b-left-menu__item_state_current' : ''))
-                a.b-left-menu__item-title(href=category.url)=category.name
+            - hasChildren && (classes += ' b-left-menu__item_has-inner_yes');
+            - isCurrent && (classes += ' b-left-menu__item_state_current');
+            - hasChildren && isCurrent && (classes += ' b-left-menu__item_expanded_yes');
+
+            li(class=classes)
+                a.b-left-menu__item-title(href='/categories/' + category.url)= category.name
                 - if (hasChildren) {
                     span.b-left-menu__expand +
                     span.b-left-menu__collapse –

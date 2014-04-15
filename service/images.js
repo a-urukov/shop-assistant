@@ -12,6 +12,7 @@ function ProductImages(product) {
 }
 
 /**
+ * @deprecated Актуально только для suvenirow
  * Класс для выгрузки изображений на удаленный хост, с произвольного url
  * src хэш { host: 'имя хоста', path: 'полный путь (вместе с параметрами)', key: 'имя ключа артикула' }
  * dir каталоги { img: 'каталог изображений', thumb: 'каталог привью' }
@@ -85,6 +86,7 @@ function Images(src, dir) {
 
             req.end();
         },
+
         downloadFiles = function(url, callback) {
             utils.downloadFile({ host: options.host, path: '/' + url.path },
                 url.isThumb ? dir.thumb : dir.img, callback);

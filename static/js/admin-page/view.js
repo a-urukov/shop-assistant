@@ -104,7 +104,7 @@ exports.AdminPageView = Backbone.View.extend({
                 }));
 
                 this.saveProductView.show(new ProductModel(data));
-                }.bind(this))
+            }.bind(this))
             .fail(function() {
                 alert('Проблема на стороне сервера')
             })
@@ -193,7 +193,7 @@ exports.AdminPageView = Backbone.View.extend({
             state = this.model.get('state');
 
         // активируем необходимую вкладку
-        $('.nav-tab, .tab-pane').removeClass('active');
+        $('.nav-tab, .tab-pane', '.main-tabs').removeClass('active');
         $('.nav-tab_type_' + tab + ', .tab-pane_type_' + tab).addClass('active');
 
         // активируем необходимый toolbox

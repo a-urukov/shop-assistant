@@ -1,46 +1,38 @@
-utils = require('./service/utils.js').utils;
-NotFound = function(msg) {
-    this.name = 'NotFound';
-    Error.call(this, msg);
-    Error.captureStackTrace(this, arguments.callee);
-};
-
 var connect = require('connect'),
     express = require('express'),
     config = require('./config'),
-    server = express(),
+    app = express(),
     MongoClient = require('mongodb').MongoClient,
     dataAdapter,
-    port = (process.env.PORT || 8080),
-    ProductsController = require('./controllers/products.js').ProductsController,
-    PagesController = require('./controllers/pages.js').PagesController,
-    CategoriesController = require('./controllers/categories.js').CategoriesController,
-    ContractorsController = require('./controllers/contractors.js').ContractorsController;
+    port = (process.env.PORT || 8080);
 
-server.configure(function() {
-    server.set('views', __dirname + '/views');
-    server.set('view options', { layout: false });
-    server.use(connect.bodyParser());
-    server.use(express.cookieParser());
-    server.use(connect.static(__dirname + '/static'));
-    server.use(express.logger());
-    server.use(express.errorHandler());
-    server.use(server.router);
+app.configure(function() {
+    app.set('views', __dirname + '/views');
+    app.set('view options', { layout: false });
+    app.use(connect.static(__dirname + '/static'));
+    app.use(connect.bodyParser({ keepExtensions: true, uploadDir: './temp' }));
+    app.use(express.cookieParser());
+    app.use(function(req, res, next) {
+        dataAdapter.getCategories(function(err, categories) {
+            req.categories = categories;
+            next();
+        });
+    });
+    app.use(app.router);
 });
 
 MongoClient.connect(config.mongoConnectionString, {}, function(err, db) {
+    if (err) {
+        console.log(err);
 
-    if (err) throw new Error(JSON.stringify(err));
+        throw new Error(JSON.stringify(err));
+    }
 
     dataAdapter = new (require('./service/data-adapter.js').DataAdapter)(db);
+    require('./service/uploader.js').init(config.AWS_ACCESS_KEY_ID, config.AWS_SECRET_ACCESS_KEY, 'andrey-shop');
+    require('./routes.js').setRoutes(app, dataAdapter);
 
-    require('./routes.js').setRoutes(server, {
-        products: new ProductsController(dataAdapter),
-        pages: new PagesController(dataAdapter),
-        categories: new CategoriesController(dataAdapter),
-        contractors: new ContractorsController(dataAdapter)
-    });
-
-    server.listen(port);
+    app.listen(port);
 });
+
 

@@ -1,4 +1,15 @@
-var xhr = function(callback) {
+var utils = require('./service/utils'),
+    uploader = require('./service/uploader'),
+    Products = require('./controllers/products.js').ProductsController,
+    Categories = require('./controllers/categories.js').CategoriesController,
+    Contractors = require('./controllers/contractors.js').ContractorsController,
+
+    /**
+     * Обертка для игнора не xhr запросов
+     * @param callback
+     * @returns {Function}
+     */
+    xhr = function(callback) {
 
         return function(req, res, next) {
             if (!req.xhr) {
@@ -9,6 +20,12 @@ var xhr = function(callback) {
         }
     },
 
+    /**
+     * Дефолтный колбэк для Ajax запросов
+     * @param response
+     * @param [processing]
+     * @returns {Function}
+     */
     sendingCallback = function(response, processing) {
 
         return function(err, data) {
@@ -16,88 +33,123 @@ var xhr = function(callback) {
 
             if (typeof data !== 'object') data += '';
 
+
+            console.log(process.memoryUsage());
             response.send((processing ? processing(data) : data));
         }
     };
 
-exports.setRoutes = function(server, controllers) {
-    var products = controllers.products,
-        pages = controllers.pages,
-        categories = controllers.categories,
-        contractors = controllers.contractors;
+exports.setRoutes = function(app, dataAdapter) {
+    var products = new Products(dataAdapter),
+        categories = new Categories(dataAdapter),
+        contractors = new Contractors(dataAdapter);
 
     /** PAGES **/
 
-    server.get('/', function(req, res) {
-        pages.shopPage(function(err, data) {
-            res.render('index.jade', {
-                title: 'Интернет магазин – главная старница',
-                description: 'shop assistant',
-                author: 'Уруков Андрей',
-                categories: data.categories
-            });
+    app.get('/', function(req, res) {
+        res.render('index.jade', {
+            title: 'Интернет магазин – главная старница',
+            description: 'shop assistant',
+            author: 'Уруков Андрей',
+            categories: req.categories
         });
     });
 
-    server.get('/test', function(req, res) {
-        pages.shopPage(function(err, data) {
-            res.render('index.jade', {
-                title: 'Интернет магазин – главная старница',
-                description: 'shop assistant',
-                author: 'Уруков Андрей',
-                categories: data.categories
-            });
+    app.get('/test', function(req, res) {
+        res.render('index.jade', {
+            title: 'Интернет магазин – главная старница',
+            description: 'shop assistant',
+            author: 'Уруков Андрей',
+            categories: req.categories
         });
         
         console.log(req.headers['referer']);
     });
 
-    server.get('/admin', function(req, res) {
-        pages.adminPage(function(err, data) {
-            res.render('admin/admin.jade', {
-                title: 'Интернет магазин – страница администрирования',
-                description: 'shop assistant',
-                author: 'Уруков Андрей',
-                syncDate: data.lastUpdate,
-                categories: data.categories
-            });
+    app.get('/admin', function(req, res) {
+        res.render('admin/admin.jade', {
+            title: 'Интернет магазин – страница администрирования',
+            description: 'shop assistant',
+            author: 'Уруков Андрей',
+            syncDate: new Date(),
+            categories: req.categories
         });
+    });
+
+    app.get('/categories/:category', function(req, res, next) {
+        categories.getCategoryByUrl(req.params.category, function(err, category) {
+            if (err) {
+                throw new Error(JSON.stringify(err));
+            } else if (category) {
+                products.getProductsByCategory(category._id, function(err, products) {
+                    res.render('category.jade', {
+                        title: 'THE SURPRISE – ' + category.name,
+                        description: 'shop assistant',
+                        category: category,
+                        products: products,
+                        categories: req.categories
+                    });
+
+                });
+            } else {
+                next();
+            }
+        })
+
     });
 
     /** PRODUCTS ADMINS GET **/
 
     /** Опубликованные товары **/
-    server.get('/admin/products/published', xhr(function(req, res) {
-        products.getPublished(sendingCallback(res, utils.toDataTable));
+    app.get('/admin/products/published', xhr(function(req, res) {
+        products.getPublished(function(err, data) { sendingCallback(res, utils.toDataTable)(err, data); });
     }));
 
     /** Неопубликованные товары **/
-    server.get('/admin/products/unpublished', xhr(function(req, res) {
+    app.get('/admin/products/unpublished', xhr(function(req, res) {
         products.getUnpublished(sendingCallback(res, utils.toDataTable));
     }));
 
     /** Новые товары у поставщика **/
-    server.get('/admin/products/new', xhr(function(req, res) {
-        products.getNew(sendingCallback(res, utils.toDataTable));
+    app.get('/admin/products/new', xhr(function(req, res) {
+        products.getNew(function(err, data) {
+            sendingCallback(res, utils.toDataTable)(err, data);
+        });
     }));
 
     /** В наличии у поставщика **/
-    server.get('/admin/products/available', xhr(function(req, res) {
+    app.get('/admin/products/available', xhr(function(req, res) {
         products.getAvailable(sendingCallback(res, utils.toDataTable));
     }));
 
     /** Нет в наличии **/
-    server.get('/admin/products/missing', xhr(function(req, res) {
+    app.get('/admin/products/missing', xhr(function(req, res) {
         products.getMissing(sendingCallback(res, utils.toDataTable));
     }));
 
+    /** Загрузка изображения **/
+    app.post('/admin/upload-image', function(req, res) {
+        var path = req.files.image.path;
+
+        uploader.uploadFile('/images/', path, function() {
+            utils.getImageThumbnail(path, function(err, thumb) {
+                uploader.uploadFile('/images/thumbs/', thumb, function() {
+                    res.send({
+                        img: path,
+                        thumb: thumb
+                    });
+                });
+            });
+        });
+    });
+
     /** Товары из черного списка **/
-    server.get('/admin/products/ignored', xhr(function(req, res) {
+    app.get('/admin/products/ignored', xhr(function(req, res) {
         products.getIgnored(sendingCallback(res, utils.toDataTable));
     }));
 
     /** Групповое редактирование */
-    server.post('/admin/products/actions/:action', xhr(function(req, res, next) {
+    app.post('/admin/products/actions/:action', xhr(function(req, res, next) {
         var action = req.params.action,
             ids = req.body.ids;
 
@@ -118,9 +170,9 @@ exports.setRoutes = function(server, controllers) {
         categories.saveCategory(req.body, sendingCallback(res));
     });
 
-    server.post('/admin/category/', saveCategory);
-    server.put('/admin/category/:id', saveCategory);
-    server.del('/admin/category/:id', xhr(function(req, res, next) {
+    app.post('/admin/category/', saveCategory);
+    app.put('/admin/category/:id', saveCategory);
+    app.del('/admin/category/:id', xhr(function(req, res, next) {
         if (req.params.id) {
             categories.removeCategory(req.params.id, sendingCallback(res));
         } else {
@@ -134,25 +186,24 @@ exports.setRoutes = function(server, controllers) {
         products.saveProduct(req.body, sendingCallback(res));
     });
 
-    server.get('/admin/product/:id', xhr(function(req, res, next) {
+    app.get('/admin/product/:id', xhr(function(req, res, next) {
         if (req.params.id) {
             products.getProduct(req.params.id, sendingCallback(res));
         } else {
             next();
         }
     }));
-    server.post('/admin/product/', saveProduct);
-    server.put('/admin/product/', saveProduct);
-
+    app.post('/admin/product/', saveProduct);
+    app.put('/admin/product/', saveProduct);
 
     /** CONTRACTORS **/
 
-    server.post('/admin/contractors/sync', xhr(function(req, res) {
+    app.post('/admin/contractors/sync', xhr(function(req, res) {
         contractors.sync(sendingCallback(res))
     }));
 
     //The 404 Route (ALWAYS Keep this as the last route)
-    server.get('/*', function(req, res) {
+    app.get('/*', function(req, res) {
         res.status(404).render('404.jade', {
             title: '404 - Not Found'
         });

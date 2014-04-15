@@ -14,6 +14,11 @@ li
     src: url('../fonts/franklin4.ttf');
 }
 
+.b-page
+{
+    font-family: Arial, serif;
+}
+
 .b-header
 {
     font-size: 20px;
@@ -24,9 +29,15 @@ li
     color: #fff;
 }
 
+.b-page__central-part
+{
+    margin-top: 35px;
+}
+
 .b-navigation
 {
     position: relative;
+    margin-bottom: 10px;
 }
 
 .b-menu
@@ -66,12 +77,6 @@ li
     font-family: FranklinGothic, Arial, serif;
 
     color: #fff;
-}
-
-img
-{
-    position: relative;
-    left: -56px;
 }
 
 .b-search
@@ -219,16 +224,29 @@ img
     color: #333;
 }
 
-.b-page
-{
-    margin-top: 37px;
-}
-
-.b-content
+.b-main-content
 {
     float: left;
 
+    margin-top: 37px;
     width: 748px;
+}
+
+.b-promo
+{
+    height: 380px;
+
+    background: #eeeeee; /* Old browsers */
+    background: -moz-linear-gradient(top, #eeeeee 0%, #f8f8f8 25%, #fafafa 50%, #f8f8f8 82%, #eeeeee 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #eeeeee), color-stop(25%, #f8f8f8), color-stop(50%, #fafafa), color-stop(82%, #f8f8f8), color-stop(100%, #eeeeee)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, #eeeeee 0%, #f8f8f8 25%, #fafafa 50%, #f8f8f8 82%, #eeeeee 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, #eeeeee 0%, #f8f8f8 25%, #fafafa 50%, #f8f8f8 82%, #eeeeee 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, #eeeeee 0%, #f8f8f8 25%, #fafafa 50%, #f8f8f8 82%, #eeeeee 100%); /* IE10+ */
+    background: linear-gradient(to bottom, #eeeeee 0%, #f8f8f8 25%, #fafafa 50%, #f8f8f8 82%, #eeeeee 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeeee', endColorstr='#eeeeee', GradientType=0); /* IE6-9 */
+
+    color: #333;
+    text-align: center;
 }
 
 .b-left-menu
@@ -428,3 +446,10 @@ img
     font: 13px Arial, serif;
     line-height: 21px;
 }
+
+.b-product-preview
+{
+    position: relative;
+}
+
+

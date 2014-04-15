@@ -1,56 +1,75 @@
 #save-product-modal.modal.hide.fade(data-keyboard='true', role='dialog', aria-labelledby='save-product-label')
     .modal-header
         h3#save-product-label Редактирование товара
+
     .modal-body
-        form
-            .error.row-fluid
-                .span12.bgcolor
-                    .alert.alert-error
-            .row-fluid
-                .span8
-                    label.control-label Название:
-                    input.span12(type='text', data-model-field='name')
-                .span4
-                    label.control-label Поставщик:
-                    input.select2.span12(type='hidden', data-model-field='contractor')
-            .row-fluid
-                .span4
-                    label Артикул:
-                    input.span12(type='text', data-model-field='article')
-                .span4
-                    label.control-label URL:
-                    input.span12(type='text', data-model-field='url')
-                .span4
-                    label Приоритет:
-                    input.span12.select2(type='hidden', data-model-field='priority')
-            .row-fluid
-                .span4
-                    label.control-label Цена (опт.):
-                    input.span12(type='text', data-model-field='optPrice')
-                .span4
-                    label.control-label Цена (рек.):
-                    input.span12(type='text', data-model-field='recPrice')
-                .span4
-                    label.control-label Цена (розн.):
-                    input.span12(type='text', data-model-field='ourPrice')
-            .row-fluid
-                .span12
-                    label.control-label Описание:
-                    textarea.span12(rows='4', data-model-field='description')
-            .row-fluid
-                .span12
-                    label.control-label Категории:
-                    input.select2.span12(type='hidden', data-model-field='categories')
-            .row-fluid.checkbox-wrap
-                .span4
-                    label.checkbox Опубликован
-                        input.published-checkbox(type='checkbox', data-model-field='published')
-                .span4
-                    label.checkbox Есть в наличии
-                        input(type='checkbox', data-model-field='available')
-                .span4
-                    label.checkbox В черном списке
-                        input.ignored-checkbox(type='checkbox', data-model-field='ignored')
+        form.tabbable
+
+            ul.nav.nav-tabs
+                li.active
+                    a(data-toggle='tab', data-target='.product-general') Основная информация
+                li
+                    a(data-toggle='tab', data-target='.product-images') Изображения
+
+            .tab-content
+                .product-general.tab-pane.active
+                    .error.row-fluid
+                        .span12.bgcolor
+                            .alert.alert-error
+                    .row-fluid
+                        .span8
+                            label.control-label Название:
+                            input.span12(type='text', data-model-field='name')
+                        .span4
+                            label.control-label Поставщик:
+                            input.select2.span12(type='hidden', data-model-field='contractor')
+                    .row-fluid
+                        .span4
+                            label Артикул:
+                            input.span12(type='text', data-model-field='article')
+                        .span4
+                            label.control-label URL:
+                            input.span12(type='text', data-model-field='url')
+                        .span4
+                            label Приоритет:
+                            input.span12.select2(type='hidden', data-model-field='priority')
+                    .row-fluid
+                        .span4
+                            label.control-label Цена (опт.):
+                            input.span12(type='text', data-model-field='optPrice')
+                        .span4
+                            label.control-label Цена (рек.):
+                            input.span12(type='text', data-model-field='recPrice')
+                        .span4
+                            label.control-label Цена (розн.):
+                            input.span12(type='text', data-model-field='ourPrice')
+                    .row-fluid
+                        .span12
+                            label.control-label Описание:
+                            textarea.span12(rows='4', data-model-field='description')
+                    .row-fluid
+                        .span12
+                            label.control-label Категории:
+                            input.select2.span12(type='hidden', data-model-field='categories')
+                    .row-fluid.checkbox-wrap
+                        .span4
+                            label.checkbox Опубликован
+                                input.published-checkbox(type='checkbox', data-model-field='published')
+                        .span4
+                            label.checkbox Есть в наличии
+                                input(type='checkbox', data-model-field='available')
+                        .span4
+                            label.checkbox В черном списке
+                                input.ignored-checkbox(type='checkbox', data-model-field='ignored')
+
+                .product-images.tab-pane
+                    .row-fluid
+                        h5 Изображения товара
+                        ul.images-list
+
+                    .row-fluid
+                        .uploader
+
 
     .modal-footer
         button.submit-btn.btn.btn-primary OK

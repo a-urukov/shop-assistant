@@ -19,7 +19,6 @@ ProductsController.prototype.getUnpublished = function(callback) {
 
 ProductsController.prototype.getNew = function(callback) {
     this._data.getProducts(function(err, products) {
-
         this._data.getContractorsProducts(function(err, contractorsProducts) {
             err && (err = 'Can\'t load new product' + JSON.stringify(err));
             callback(err, catalog.getNewProducts(products, contractorsProducts));
@@ -55,10 +54,14 @@ ProductsController.prototype.getIgnored = function(callback) {
 
 ProductsController.prototype.getProduct = function(id, callback) {
     this._data.getProducts({ _id: id }, function(err, products) {
-        callback(err && ('Can\'t get product: ' + JSON.stringifyx(err)), products && products[0]);
+
+        callback(err && ('Can\'t get product: ' + JSON.stringify(err)), products && products[0]);
     });
 };
 
+ProductsController.prototype.getProductsByCategory = function(categoryId, callback) {
+    this._data.getProductsByCategory(categoryId, callback);
+};
 
 /**
  * Групповые действия над товарами

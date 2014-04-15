@@ -169,20 +169,6 @@ function clone(obj) {
 }
 
 /**
- * Колбэк прокидывающий данные в response
- * @param response
- * @returns {Function}
- */
-function sendingCallback(response) {
-    return function(err, data) {
-        if (err) {
-            throw new Error(JSON.stringify(err));
-        }
-        response.send(data);
-    }
-}
-
-/**
  * Представление товара в форамате компонента DataTable
  * @param {Array} products
  * @returns {Object}
@@ -231,6 +217,7 @@ function toDataTable(products) {
 }
 
 /**
+ * @deprecated актуально для SQL
  * Транзакция (набор запросов выполняемых параллельно)
  * @param queries массив запросов (может быть задано кол-во выполнений)
  * @param callback вызывается после выполнения ВСЕХ запросов составляющих транзакцию
@@ -316,10 +303,33 @@ function getXmlParser() {
     }
 }
 
-exports.TimeMetrics = TimeMetrics;
-exports.MultiQuery = MultiQuery;
+/**
+ * Получение превью изображения
+ * src {String} – путь к файлу
+ * callback – прокидывается path, stream
+ */
+function getImageThumbnail(src, callback) {
+    var reg = src.match(/(.*[A-z\.\-0-9_А-я]+)(\.[A-z0-9]+)$/),
+        thumb = reg[1] + '_thumb' + reg[2];
 
-exports.utils = {
+    require('imagemagick').resize({
+        srcPath: src,
+        dstPath: thumb,
+        width: 130
+    }, function(err) {
+        if (err) {
+            throw new Error('image magic error: ')
+        }
+
+        callback(err, thumb);
+    });
+}
+
+module.exports = {
+    TimeMetrics: TimeMetrics,
+    MultiQuery: MultiQuery,
+
+    // helpers
     addRowLogMessage: addRowLogMessage,
     getOurPrice: getOurPrice,
     sync: sync,
@@ -327,5 +337,6 @@ exports.utils = {
     toDataTable: toDataTable,
     clone: clone,
     nameToUrl: nameToUrl,
-    getXmlParser: getXmlParser
+    getXmlParser: getXmlParser,
+    getImageThumbnail: getImageThumbnail
 };

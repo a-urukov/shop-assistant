@@ -1,3 +1,5 @@
+require('../../utils/uploader.js');
+
 var AbstractSaveView = require('../abstract-save-view').AbstractSaveView;
 
 exports.SaveProductView = AbstractSaveView.extend({
@@ -26,7 +28,9 @@ exports.SaveProductView = AbstractSaveView.extend({
             saveCallback(this.model.get('ignored') ?
                 'ignored' :
                 this.model.get('published') ? 'published' : 'unpublished');
-        })
+        });
+
+        this.uploader = this.$el.find('.uploader').FileUploader();
     },
 
     show: function(model) {
@@ -64,5 +68,23 @@ exports.SaveProductView = AbstractSaveView.extend({
                 return { id: val.toString(), text: val.toString() };
             })
         });
+
+        this.images = this.model.get('images') || [];
+        this._renderImagesList();
+    },
+
+    _renderImagesList: function() {
+        var $imagesList = $('.images-list', this.$el);
+
+        $imagesList.html(this.images.length ? '' : 'Нет загруженных изображений');
+
+        this.images.forEach(function(img) {
+            $imagesList.append('<div class="product-image"><img width="100px" height="100px" src="' + img.url +
+                '" /><span></span></div>');
+        });
     }
 });
+
+
+(function() {
+})();
