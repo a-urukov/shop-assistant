@@ -213,31 +213,36 @@ DataAdapter.prototype.saveCategory = function(category, callback) {
         parentId: category.parentId && new ObjectID(category.parentId),
         published: !!category.published && category !== 'false'
     }, callback);
-}
+};
 
-//TODO  доделать удаление
+/**
+ * Удаление категории и всех вложенных подкатегорий
+ * @param id
+ * @param callback
+ */
 DataAdapter.prototype.removeCategory = function(id, callback) {
     var _this = this,
-        id = new ObjectID(id);
+        objId = idWrap(id),
+        ref = new DBRef('categories', objId);
 
-    this._products.remove(id, function(err) {
-        if (err) { callback(err); return; }
+    // убираем удаляемую категорию из товаров
+    this._products.update({ categories: ref }, { $pull: { categories: ref } }, { multi: true }, function() {
 
-        _this._categories.find({ parentId: id }, { _id: 1 }).toArray(function(err, inner) {
-            if (err || !inner || !inner.length) { callback(err); return; }
+        // удаляем все подкатегории
+        _this._categories.find({ parentId: objId }).toArray(function(err, sub) {
 
-            inner = inner.map(function(c) { return c._id });
-            utils.sync(inner, {
+            utils.sync(sub.map(function(s) { return s._id }), {
                 method: _this.removeCategory,
                 ctx: _this,
-                callback: callback
-            });
+                callback: function() {
 
+                    // удаляем категорию
+                    _this._categories.remove({ _id: objId }, callback);
+                }
+            });
         });
     });
-
-    //this._products.find({ 'categories.$id': id }); // научиться выпиливать из массива категорий в продукте
-}
+};
 
 /**
  * Получение товаров поставщиков
