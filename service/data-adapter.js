@@ -25,22 +25,22 @@ function DataAdapter(db) {
 
 /**
  * Получение товаров каталога
- * @param {Object} options
+ * @param {Object} criteria
  * {bool} options.published – опубликованные|неопубликованные товары
  * {bool} options.ignored – игнорируемые|неигнорируемые товары
  * @param callback
  */
-DataAdapter.prototype.getProducts = function(options, callback) {
+DataAdapter.prototype.getProducts = function(criteria, callback) {
     var query = {};
 
-    if (options && callback) {
-        typeof options.published === 'boolean' && (query.published = options.published);
-        typeof options.ignored === 'boolean' && (query.ignored = options.ignored);
-        typeof options._id === 'string' && (query._id = new ObjectID(options._id));
+    if (criteria && callback) {
+        typeof criteria.published === 'boolean' && (query.published = criteria.published);
+        typeof criteria.ignored === 'boolean' && (query.ignored = criteria.ignored);
+        typeof criteria._id === 'string' && (query._id = new ObjectID(criteria._id));
 
-        if (options.categoriesIds instanceof Array) {
+        if (criteria.categoriesIds instanceof Array) {
             query.categories = {
-                $in: options.categoriesIds.map(function(id) {
+                $in: criteria.categoriesIds.map(function(id) {
 
                     return new DBRef('categories', idWrap(id));
                 })
@@ -48,7 +48,7 @@ DataAdapter.prototype.getProducts = function(options, callback) {
         }
 
     } else if (!callback) {
-        callback = options;
+        callback = criteria;
     }
 
     var db = this._db,
@@ -150,11 +150,11 @@ DataAdapter.prototype.getCategoryByUrl = function(url, callback) {
 };
 
 /**
- *
+ * Возвращает иерархичный список категорий (массив) и хэш содержащий все категории (id -> category)
  * @param callback
  */
 DataAdapter.prototype.getCategories = function(callback) {
-    this._categories.find().toArray(function(err, categories) {
+    this._categories.find().sort({ posInMenu: 1 }).toArray(function(err, categories) {
         if (err) {
             callback(err);
 
@@ -176,6 +176,9 @@ DataAdapter.prototype.getCategories = function(callback) {
                 hash[category.parentId].children.push(category);
             }
         });
+
+        Object.getOwnPropertyNames(categories)
+
 
         callback(null, roots, hash);
     });
@@ -202,6 +205,11 @@ DataAdapter.prototype.getCategoriesIdsByParent = function(id, callback) {
     });
 }
 
+/**
+ * Создание и редактирование категории
+ * @param category
+ * @param callback
+ */
 DataAdapter.prototype.saveCategory = function(category, callback) {
     this._categories.save({
         _id: category._id && new ObjectID(category._id),

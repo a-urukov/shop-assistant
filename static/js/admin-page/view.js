@@ -255,6 +255,15 @@ exports.AdminPageView = Backbone.View.extend({
             category.children && category.children.forEach(prepare);
         });
 
+        // обрезаем длину описания категорий
+        $('.b-category__desc').each(function() {
+            var $this = $(this),
+                desc = $this.html();
+
+            $this.attr('title', desc);
+            desc.length > 200 && $this.html(desc.substr(0, 200) + '...');
+        });
+
         this.model.set({ categories: new Categories(models) });
     }
 });

@@ -13,6 +13,19 @@ exports.SaveCategoryView = AbstractSaveView.extend({
     initialize: function(options) {
         AbstractSaveView.prototype.initialize.apply(this, arguments);
         this.getCategories = options.getCategories;
+
+        // заполняем наименование в меню
+        $('input[data-model-field=name]').bind('blur', function() {
+            var menuName = $('input[data-model-field=nameInMenu]');
+
+            menuName.val() || menuName.val($(this).val());
+        });
+    },
+
+    onSubmit: function() {
+        AbstractSaveView.prototype.onSubmit.apply(this, arguments);
+
+        location.reload();
     },
 
     show: function(model) {

@@ -23,7 +23,7 @@ mixin product(product)
                         .b-category-info
                             h1.b-category-info__title
                                 a.b-category-info__link(href='/test')=category.name
-                            p.b-category-info__text=category.description
+                            p.b-category-info__text!=category.description
                     - } else {
                         mixin product(products[i - !!category])
                     - }
