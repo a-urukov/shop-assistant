@@ -6,14 +6,15 @@
         - categories && categories.forEach(function render(category) {
             - var hasChildren = category.children && category.children.length;
             - var isCurrent = category._id.toString() == currentId;
+            - var isExpand = hasChildren && (isCurrent || (category.parentId == currentId && category.posInMenu == 1));
             - var classes = 'b-left-menu__item';
 
             - hasChildren && (classes += ' b-left-menu__item_has-inner_yes');
             - isCurrent && (classes += ' b-left-menu__item_state_current');
-            - hasChildren && isCurrent && (classes += ' b-left-menu__item_expanded_yes');
+            - isExpand && (classes += ' b-left-menu__item_expanded_yes');
 
             li(class=classes)
-                a.b-left-menu__item-title(href='/categories/' + category.url)= category.name
+                a.b-left-menu__item-title(href='/categories/' + category.url, title=category.name)=category.nameInMenu
                 - if (hasChildren) {
                     span.b-left-menu__expand +
                     span.b-left-menu__collapse –

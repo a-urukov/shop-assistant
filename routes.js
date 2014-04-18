@@ -99,9 +99,9 @@ exports.setRoutes = function(app, dataAdapter) {
     /** PRODUCTS ADMINS GET **/
 
     /** Опубликованные товары **/
-    app.get('/admin/products/published', function(req, res) {
+    app.get('/admin/products/published', xhr(function(req, res) {
         products.getPublished(function(err, data) { sendingCallback(res, utils.toDataTable)(err, data); });
-    });
+    }));
 
     /** Неопубликованные товары **/
     app.get('/admin/products/unpublished', xhr(function(req, res) {
@@ -109,11 +109,11 @@ exports.setRoutes = function(app, dataAdapter) {
     }));
 
     /** Новые товары у поставщика **/
-    app.get('/admin/products/new', function(req, res) {
+    app.get('/admin/products/new', xhr(function(req, res) {
         products.getNew(function(err, data) {
             sendingCallback(res, utils.toDataTable)(err, data);
         });
-    });
+    }));
 
     /** В наличии у поставщика **/
     app.get('/admin/products/available', xhr(function(req, res) {

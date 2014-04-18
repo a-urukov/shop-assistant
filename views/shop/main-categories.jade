@@ -1,29 +1,32 @@
-ul.b-main-categories.clearfix
-    li.b-main-categories__item
-        a.b-main-categories__item-link(href='#') Подарки для женщины
-        span.b-main-categories__item-divider /
-        .b-main-categories__dropdown.span12
-            .b-main-categories__dropdown-content.clearfix
-                .b-subcategories
-                    h4.b-subcategories__title Кому дарить?
-                    ul.b-subcategories__list
-                        li.b-subcategories__item
-                            a.b-subcategories__item-link Жене
-                                li.b-subcategories__item
-                            a.b-subcategories__item-link Любимой девушке
-                                li.b-subcategories__item
-                            a.b-subcategories__item-link Маме
-                                li.b-subcategories__item
-                            a.b-subcategories__item-link Коллеге
-                                li.b-subcategories__item
-                            a.b-subcategories__item-link Дочери
-                                li.b-subcategories__item
-                            a.b-subcategories__item-link Подруге
+mixin subcategory(name, sub)
+    .b-subcategories
+        h3.b-subcategories__title=name
+        ul.b-subcategories__list
+            - sub && sub.forEach(function(subCategory) {
+                li.b-subcategories__item
+                    a.b-subcategories__item-link(href='/categories/' + subCategory.url, title=subCategory.name)=subCategory.nameInMenu
+            - });
 
-    li.b-main-categories__item  Подарки для мужчины
-        span.b-main-categories__item-divider /
-    li.b-main-categories__item Товары для дома
-        span.b-main-categories__item-divider /
-    li.b-main-categories__item Удивительные вещи
-        span.b-main-categories__item-divider /
-    li.b-main-categories__item Все для кухни
+ul.b-main-categories.clearfix
+    - categories && categories.forEach(function (category, n) {
+        - if (category.children && category.children.length) {
+            li.b-main-categories__item
+                a.b-main-categories__item-link(href='/categories/' + category.url, title=category.name)=category.nameInMenu
+                - if (n != categories.length - 1)
+                    span.b-main-categories__item-divider /
+                .b-main-categories__dropdown.span12
+                    .b-main-categories__dropdown-content.clearfix
+                        - // определение одноуровневая/двухуровневая структура корневого узла
+                        - var isSimpleCategory = !(category.children[0].children && category.children[0].children.length);
+
+                        - if (isSimpleCategory) {
+                            mixin subcategory('Категории', category.children)
+                        - } else {
+                            - category.children.forEach(function(subCategory) {
+                                mixin subcategory(subCategory.nameInMenu, subCategory.children)
+                            - });
+                        - }
+                        .b-main-categories__hits
+                            h3.b-main-categories__hits-title Хиты продаж
+         - }
+    - });

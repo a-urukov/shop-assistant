@@ -10,6 +10,7 @@ mixin product(product)
     .b-gallery
         - var countRow = Math.floor((products.length + !!category) / 5) + 1;
         - var countBig = countRow - !!category;
+        - var colors = ['#ff6200', '#68bf2a', '#ff6200', '#ce123a', '#00ad93', '#00aeef', '#00727d', '#ec008c', '#a60063', '#b3d4fc', '#ffb300'];
 
         - for (var i = 0; i < countRow; i++) {
             div(class='b-gallery__row clearfix' + (i % 2 ? ' b-gallery__row_order_reverse' : '' ))
@@ -20,9 +21,9 @@ mixin product(product)
                     - }
                 .b-gallery__cell.b-gallery__cell_size_big
                     - if (category && !i) {
-                        .b-category-info
-                            h1.b-category-info__title
-                                a.b-category-info__link(href='/test')=category.name
+                        .b-category-info(style='background-color: ' + colors[(category.name.length + category.posInMenu) % colors.length])
+                            div.b-category-info__title-wrap
+                                h1.b-category-info__title=category.name
                             p.b-category-info__text!=category.description
                     - } else {
                         mixin product(products[i - !!category])

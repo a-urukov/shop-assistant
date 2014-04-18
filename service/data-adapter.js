@@ -217,7 +217,7 @@ DataAdapter.prototype.saveCategory = function(category, callback) {
         url: category.url || utils.nameToUrl(category.name),
         description: category.description,
         nameInMenu: category.nameInMenu || category.name,
-        posInMenu: category.posInMenu || 0,
+        posInMenu: category.posInMenu || 99,
         parentId: category.parentId && new ObjectID(category.parentId),
         published: !!category.published && category !== 'false'
     }, callback);
