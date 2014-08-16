@@ -46,7 +46,7 @@ exports.setRoutes = function(app, dataAdapter) {
 
     app.get('/', function(req, res) {
         res.render('index.jade', {
-            title: 'Интернет магазин – главная старница',
+            title: 'THE SURPRISE – интернет магазин оригинальных подарков, удивительных вещей и креативных товаров для дома',
             description: 'shop assistant',
             author: 'Уруков Андрей',
             categories: req.categories
@@ -81,13 +81,12 @@ exports.setRoutes = function(app, dataAdapter) {
             } else if (category) {
                 products.getProductsByCategory(category._id, function(err, products) {
                     res.render('category.jade', {
-                        title: 'THE SURPRISE – ' + category.name,
+                        title: 'THE SURPRISE – Купить ' + category.name + ' в Москве',
                         description: 'shop assistant',
                         category: category,
                         products: products,
                         categories: req.categories
                     });
-
                 });
             } else {
                 next();

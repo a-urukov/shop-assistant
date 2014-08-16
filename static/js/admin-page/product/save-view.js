@@ -36,18 +36,22 @@ exports.SaveProductView = AbstractSaveView.extend({
     show: function(model) {
         AbstractSaveView.prototype.show.apply(this, arguments);
 
+        var categories = [];
+
+        this.getCategories().forEach(function(category) {
+            category.get('children').length || categories.push({
+                id: category.id,
+                text: category.get('name')
+            })
+        });
+
         _.find(this.inputs, function(input) {
             return input.name == 'categories';
         }).dom.select2({
             placeholder: 'нет категории',
             allowClear: true,
             multiple: true,
-            data: this.getCategories().map(function(m) {
-                return {
-                    id: m.id,
-                    text: m.get('name')
-                }
-            })
+            data: categories
         });
 
         _.find(this.inputs, function(input) {

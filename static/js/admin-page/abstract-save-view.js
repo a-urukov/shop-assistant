@@ -33,7 +33,13 @@ exports.AbstractSaveView = Backbone.View.extend({
             }
         }, this);
 
-        this.$el.modal();
+        this
+            .$el
+            .modal()
+            .on('shown', function() {
+                this.inputs[0].dom.focus();
+            }.bind(this));
+
         this.error.hide();
     },
 
