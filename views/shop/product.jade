@@ -1,0 +1,12 @@
+mixin product(product, isBig)
+    - if (product) {
+        -var size = isBig ? '320px' : '130px';
+
+        .b-product-preview
+            a.b-product-preview__link(href=baseUrl + 'products/' + product.url)
+                img.product-preview__image(width=size, height=size, title=product.name, src='/images/default.jpg')
+                .b-product-preview__info
+                    h2.b-product-preview__name=product.name
+                    .b-product-preview__price=product.ourPrice + ' руб.'
+            .b-product-preview__buy В корзину
+    -}

@@ -74,25 +74,32 @@ exports.setRoutes = function(app, dataAdapter) {
         });
     });
 
-    app.get('/categories/:category', function(req, res, next) {
+    app.get('/categories/:category/:all?', function(req, res, next) {
+        if (req.params.all && req.params.all !== 'all') { next(); return; }
+
         categories.getCategoryByUrl(req.params.category, function(err, category) {
             if (err) {
                 throw new Error(JSON.stringify(err));
             } else if (category) {
-                products.getProductsByCategory(category._id, function(err, products) {
+                products.getProductsByCategory(category._id, !req.params.all && { page: 1, count: 50 }, function(err, products) {
                     res.render('category.jade', {
                         title: 'THE SURPRISE – Купить ' + category.name + ' в Москве',
                         description: 'shop assistant',
                         category: category,
-                        products: products,
-                        categories: req.categories
+                        products: products.products,
+                        fullCount: products.fullCount,
+                        categories: req.categories,
+                        baseUrl: req.baseUrl
                     });
                 });
             } else {
                 next();
             }
         })
+    });
 
+    app.get('/products/:product', function(req, res, next) {
+        res.send('yes');
     });
 
     /** PRODUCTS ADMINS GET **/

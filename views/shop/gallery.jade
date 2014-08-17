@@ -1,13 +1,15 @@
-mixin product(product)
-    - if (product) {
-        .b-product-preview
-            img.product-preview__image(width='130px', height='130px', title=product.name, src='/images/default.jpg')
-            .b-product-preview__details
-                h2.b-product-preview__name=product.name
-    -}
+include ./product
 
 - if (products && category) {
+
     .b-gallery
+        div.b-gallery__toolbox
+            div.b-gallery__counts
+                 span.b-gallery__shown=products.length + ' из ' + fullCount + ' креативных товаров'
+                 -if (products.length !== fullCount)
+                     a.b-link.b-gallery__show-all(href=baseUrl + 'categories/' + category.url + '/all', title='Показать все ' + category.name) Показать все
+
+
         - var cellCount = products.length + !!category;
         - var rowCount = Math.floor((cellCount) / 5) + (cellCount % 5 && 1);
         - var bigCellCount = rowCount - !!category;
@@ -17,17 +19,18 @@ mixin product(product)
             div(class='b-gallery__row clearfix' + (i % 2 ? ' b-gallery__row_order_reverse' : ''))
                 .b-gallery__holder.clearfix
                     - for (var j = 0; j < 4; j++) {
-                        .b-gallery__cell.b-product
+                        div(class='b-gallery__cell' + (!products[i * 4 + j + bigCellCount] ? ' b-gallery__cell_empty_yes' : ''))
                             mixin product(products[i * 4 + j + bigCellCount])
                     - }
-                .b-gallery__cell.b-gallery__cell_size_big
+
+                div(class='b-gallery__cell b-gallery__cell_size_big' + (category && !i ? ' b-gallery__cell_without_border' : ''))
                     - if (category && !i) {
                         .b-category-info(style='background-color: ' + colors[(category.name.length + category.posInMenu) % colors.length])
                             div.b-category-info__title-wrap
                                 h1.b-category-info__title=category.name
                             p.b-category-info__text!=category.description
                     - } else {
-                        mixin product(products[i - !!category])
+                        mixin product(products[i - !!category], true)
                     - }
         - }
 - }

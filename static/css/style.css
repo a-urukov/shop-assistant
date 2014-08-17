@@ -14,6 +14,19 @@ li
     src: url('../fonts/franklin4.ttf');
 }
 
+.b-link
+{
+    font-weight: bold;
+    font-size: 12px;
+
+    color: #00aeef;
+}
+
+.b-link:hover
+{
+    color: #00aeef;
+}
+
 .b-page
 {
     font-family: Arial, serif;
@@ -235,7 +248,6 @@ li
 {
     float: left;
 
-    margin-top: 37px;
     width: 748px;
 }
 
@@ -383,6 +395,24 @@ li
     right: -4px;
 }
 
+.b-gallery__toolbox
+{
+    margin-bottom: 5px;
+}
+
+.b-gallery__shown
+{
+    font-size: 12px;
+    font-weight: bold;
+
+    color: #666;
+}
+
+.b-gallery__show-all
+{
+    padding-left: 5px;
+}
+
 .b-gallery__row .b-gallery__holder,
 .b-gallery__row .b-gallery__cell
 {
@@ -398,10 +428,17 @@ li
 .b-gallery__cell
 {
     margin: 0 4px 4px 0;
-    height: 183px;
-    width: 183px;
+    height: 177px;
+    width: 177px;
+
+    border: 3px solid #eee;
 
     background: #eee;
+}
+
+.b-gallery__cell:hover
+{
+    border: 3px solid #ccc;
 }
 
 .b-gallery__holder
@@ -411,8 +448,27 @@ li
 
 .b-gallery__cell_size_big
 {
+    height: 364px;
+    width: 364px;
+}
+
+.b-gallery__cell_without_border
+{
     height: 370px;
     width: 370px;
+    border: none;
+}
+
+.b-gallery__cell_without_border:hover,
+.b-gallery__cell_empty_yes:hover
+{
+    border: none;
+}
+
+.b-gallery__cell_empty_yes
+{
+    background: none;
+    border: none;
 }
 
 .b-category-info
@@ -461,6 +517,76 @@ li
 .b-product-preview
 {
     position: relative;
+    padding: 2px;
+
+
+    width: inherit;
+    height: inherit;
+
+    text-align: center;
 }
 
+.b-product-preview__info
+{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 51px;
+
+    padding: 0 10px;
+
+    text-align: left;
+}
+
+.b-product-preview__name
+{
+    font-size: 12px;
+
+    margin: 0;
+
+    line-height: 14px;
+    color: #000;
+}
+
+.b-product-preview__name:hover
+{
+    text-decoration: underline;
+}
+
+.b-product-preview__price
+{
+    font-size: 11px;
+    font-weight: bold;
+
+    margin-top: 2px;
+
+    color: #666;
+}
+
+.b-product-preview__buy
+{
+    font-family: FranklinGothic, Arial, serif;
+    font-size: 14px;
+
+    display: none;
+
+    position: absolute;
+    left: -3px;
+    right: 1px;
+    bottom: 57px;
+    z-index: 200;
+
+    padding: 4px 7px;
+
+    background: #00aeef;
+    color: #fff;
+    text-transform: uppercase;
+    text-align: right;
+    cursor: pointer;
+}
+
+.b-product-preview__buy:hover
+{
+    background-color: #00759b;
+}
 

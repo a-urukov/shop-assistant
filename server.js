@@ -13,12 +13,21 @@ app.configure(function() {
     app.use(connect.bodyParser({ keepExtensions: true, uploadDir: './temp' }));
     app.use(express.cookieParser());
     app.use(function(req, res, next) {
+        req.baseUrl = req.protocol + '://' + req.headers.host + '/';
+        next();
+    });
+    app.use(function(req, res, next) {
         dataAdapter.getCategories(function(err, categories) {
             req.categories = categories;
             next();
         });
     });
     app.use(app.router);
+    app.use(function(err, req, res, next) {
+        if (err) res.status(500).render('500.jade', {
+            baseUrl: req.baseUrl
+        });
+    });
 });
 
 MongoClient.connect(config.mongoConnectionString, {}, function(err, db) {

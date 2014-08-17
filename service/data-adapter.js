@@ -25,22 +25,26 @@ function DataAdapter(db) {
 
 /**
  * Получение товаров каталога
- * @param {Object} criteria
+ * @param {Object} options
  * {bool} options.published – опубликованные|неопубликованные товары
  * {bool} options.ignored – игнорируемые|неигнорируемые товары
+ * {bool} options.paginations – пагинация
  * @param callback
  */
-DataAdapter.prototype.getProducts = function(criteria, callback) {
-    var query = {};
+DataAdapter.prototype.getProducts = function(options, callback) {
+    var query = {},
+        paginations = {};
 
-    if (criteria && callback) {
-        typeof criteria.published === 'boolean' && (query.published = criteria.published);
-        typeof criteria.ignored === 'boolean' && (query.ignored = criteria.ignored);
-        typeof criteria._id === 'string' && (query._id = new ObjectID(criteria._id));
+    if (options && callback) {
+        typeof options.published === 'boolean' && (query.published = options.published);
+        typeof options.ignored === 'boolean' && (query.ignored = options.ignored);
+        typeof options._id === 'string' && (query._id = new ObjectID(options._id));
 
-        if (criteria.categoriesIds instanceof Array) {
+        paginations = options.paginations || {};
+
+        if (options.categoriesIds instanceof Array) {
             query.categories = {
-                $in: criteria.categoriesIds.map(function(id) {
+                $in: options.categoriesIds.map(function(id) {
 
                     return new DBRef('categories', idWrap(id));
                 })
@@ -48,11 +52,11 @@ DataAdapter.prototype.getProducts = function(criteria, callback) {
         }
 
     } else if (!callback) {
-        callback = criteria;
+        callback = options;
     }
 
     var db = this._db,
-        cursor = this._products.find(query),
+        cursor = this._products.find(query).skip((paginations.page - 1) * paginations.count).limit(paginations.count),
         result = [],
         product;
 
@@ -83,7 +87,12 @@ DataAdapter.prototype.getProducts = function(criteria, callback) {
                     prepare();
                 }
             } else {
-                callback(err, result);
+                cursor.count(function(err, count) {
+                    callback(err, {
+                        products: result,
+                        fullCount: count
+                    });
+                });
             }
         });
     })();
@@ -94,12 +103,12 @@ DataAdapter.prototype.getProducts = function(criteria, callback) {
  * @param categoryId
  * @param callback
  */
-DataAdapter.prototype.getProductsByCategory = function(categoryId, callback) {
+DataAdapter.prototype.getProductsByCategory = function(categoryId, paginations, callback) {
     this.getCategoriesIdsByParent(categoryId, function(err, ids) {
         if (err) {
             callback(err);
         } else {
-            this.getProducts({ categoriesIds: ids, published: true }, callback);
+            this.getProducts({ categoriesIds: ids, published: true, paginations: paginations }, callback);
         }
     }.bind(this));
 };
@@ -176,9 +185,6 @@ DataAdapter.prototype.getCategories = function(callback) {
                 hash[category.parentId].children.push(category);
             }
         });
-
-        Object.getOwnPropertyNames(categories)
-
 
         callback(null, roots, hash);
     });
