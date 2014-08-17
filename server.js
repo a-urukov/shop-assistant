@@ -24,9 +24,13 @@ app.configure(function() {
     });
     app.use(app.router);
     app.use(function(err, req, res, next) {
-        if (err) res.status(500).render('500.jade', {
-            baseUrl: req.baseUrl
-        });
+        if (err) {
+            res.status(500).render('500.jade', {
+                baseUrl: req.baseUrl
+            });
+            
+            console.log(err.message);
+        }
     });
 });
 

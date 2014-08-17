@@ -78,20 +78,35 @@ exports.setRoutes = function(app, dataAdapter) {
         if (req.params.all && req.params.all !== 'all') { next(); return; }
 
         categories.getCategoryByUrl(req.params.category, function(err, category) {
+            var sortBy = req.query['sort-by'] || 'popularity';
+
             if (err) {
                 throw new Error(JSON.stringify(err));
             } else if (category) {
-                products.getProductsByCategory(category._id, !req.params.all && { page: 1, count: 50 }, function(err, products) {
-                    res.render('category.jade', {
-                        title: 'THE SURPRISE – Купить ' + category.name + ' в Москве',
-                        description: 'shop assistant',
-                        category: category,
-                        products: products.products,
-                        fullCount: products.fullCount,
-                        categories: req.categories,
-                        baseUrl: req.baseUrl
-                    });
-                });
+                products.getProductsByCategory(
+                    category._id,
+                    {
+                        paginations: !req.params.all && { page: 1, count: 50 },
+                        sortBy: sortBy
+                    },
+                    function(err, products) {
+                        res.render('category.jade', {
+                            title: 'THE SURPRISE – Купить ' + category.name + ' в Москве',
+                            description: 'shop assistant',
+                            category: category,
+                            products: products.products,
+                            fullCount: products.fullCount,
+                            categories: req.categories,
+                            baseUrl: req.baseUrl,
+                            sortedParams: [
+                                { key: 'popularity', title: 'Популярности' },
+                                { key: 'name', title: 'А-Я' },
+                                { key: 'price-asc', title: 'Цена ▲' },
+                                { key: 'price-desc', title: 'Цена ▼' }
+                            ],
+                            sortBy: sortBy
+                        });
+                    })
             } else {
                 next();
             }

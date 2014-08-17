@@ -33,14 +33,16 @@ function DataAdapter(db) {
  */
 DataAdapter.prototype.getProducts = function(options, callback) {
     var query = {},
-        paginations = {};
+        paginations,
+        sorting;
 
     if (options && callback) {
         typeof options.published === 'boolean' && (query.published = options.published);
         typeof options.ignored === 'boolean' && (query.ignored = options.ignored);
         typeof options._id === 'string' && (query._id = new ObjectID(options._id));
 
-        paginations = options.paginations || {};
+        paginations = options.paginations;
+        sorting = options.sorting;
 
         if (options.categoriesIds instanceof Array) {
             query.categories = {
@@ -56,9 +58,19 @@ DataAdapter.prototype.getProducts = function(options, callback) {
     }
 
     var db = this._db,
-        cursor = this._products.find(query).skip((paginations.page - 1) * paginations.count).limit(paginations.count),
+        cursor = this._products.find(query),
         result = [],
         product;
+
+    if (sorting) {
+        var sortBy = {};
+
+        sortBy[sorting.sortBy] = sorting.direction === 'desc' ? -1 : 1;
+        cursor.sort(sortBy);
+    }
+
+    paginations && cursor.skip((paginations.page - 1) * paginations.count).limit(paginations.count);
+
 
     (function prepare() {
         product && result.push(product);
@@ -96,21 +108,6 @@ DataAdapter.prototype.getProducts = function(options, callback) {
             }
         });
     })();
-};
-
-/**
- * Получить все товары, включая подкатегории
- * @param categoryId
- * @param callback
- */
-DataAdapter.prototype.getProductsByCategory = function(categoryId, paginations, callback) {
-    this.getCategoriesIdsByParent(categoryId, function(err, ids) {
-        if (err) {
-            callback(err);
-        } else {
-            this.getProducts({ categoriesIds: ids, published: true, paginations: paginations }, callback);
-        }
-    }.bind(this));
 };
 
 /**

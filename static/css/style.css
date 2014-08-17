@@ -25,6 +25,7 @@ li
 .b-link:hover
 {
     color: #00aeef;
+
 }
 
 .b-page
@@ -381,7 +382,7 @@ li
 .b-left-menu__item_expanded_yes > .b-left-menu__collapse,
 .b-left-menu__item_expanded_yes > .b-left-menu__list
 {
-   display: block;
+    display: block;
 }
 
 .b-left-menu__item_expanded_yes > .b-left-menu__expand
@@ -397,15 +398,31 @@ li
 
 .b-gallery__toolbox
 {
-    margin-bottom: 5px;
-}
-
-.b-gallery__shown
-{
     font-size: 12px;
     font-weight: bold;
 
+    margin-bottom: 5px;
+
     color: #666;
+}
+
+.b-gallery__sort
+{
+    float: right;
+}
+
+.b-gallery__sort-param
+{
+    display: inline-block;
+
+    border-right: 1px solid #d9d9d9;
+
+    padding: 0 10px;
+}
+
+.b-gallery__sort-param:last-child
+{
+    border: none;
 }
 
 .b-gallery__show-all

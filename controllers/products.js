@@ -59,8 +59,43 @@ ProductsController.prototype.getProduct = function(id, callback) {
     });
 };
 
-ProductsController.prototype.getProductsByCategory = function(categoryId, paginations, callback) {
-    this._data.getProductsByCategory(categoryId, paginations, callback);
+ProductsController.prototype.getProductsByCategory = function(categoryId, options, callback) {
+    var data = this._data,
+        sortBy = options.sortBy,
+        sort = {
+            sortBy: 'priority',
+            direction: 'desc'
+        };
+
+    // преобразование GET параметров сортировки в параметры для запроса БД
+    switch (sortBy) {
+        case 'price-asc' :
+            sort.sortBy = 'ourPrice';
+            sort.direction = 'asc';
+            break;
+
+        case 'price-desc' :
+            sort.sortBy = 'ourPrice';
+            break;
+
+        case 'name' :
+            sort.sortBy = 'name';
+            sort.direction = 'asc';
+            break;
+    }
+
+    data.getCategoriesIdsByParent(categoryId, function(err, ids) {
+        if (err) {
+            callback(err);
+        } else {
+            data.getProducts({
+                categoriesIds: ids,
+                published: true,
+                paginations: options.paginations,
+                sorting: sort
+            }, callback);
+        }
+    });
 };
 
 /**

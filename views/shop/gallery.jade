@@ -1,36 +1,49 @@
 include ./product
 
 - if (products && category) {
-
     .b-gallery
         div.b-gallery__toolbox
             div.b-gallery__counts
                  span.b-gallery__shown=products.length + ' из ' + fullCount + ' креативных товаров'
-                 -if (products.length !== fullCount)
-                     a.b-link.b-gallery__show-all(href=baseUrl + 'categories/' + category.url + '/all', title='Показать все ' + category.name) Показать все
-
+                     - if (products.length !== fullCount)
+                         a.b-link.b-gallery__show-all(href=baseUrl + 'categories/' + category.url + '/all', title='Показать все ' + category.name) Показать все
+                 ul.b-gallery__sort
+                    | сортировать по:
+                    - sortedParams.map(function(param) {
+                         li.b-gallery__sort-param
+                             - if (param.key === sortBy)
+                                 .b-gallery__sort-by=param.title
+                             - else {
+                                 a.b-link(href=baseUrl + 'categories/' + category.url + '?sort-by=' + param.key)=param.title
+                             - }
+                    - });
 
         - var cellCount = products.length + !!category;
         - var rowCount = Math.floor((cellCount) / 5) + (cellCount % 5 && 1);
         - var bigCellCount = rowCount - !!category;
+        - var counter = 0;
         - var colors = ['#ff6200', '#68bf2a', '#ff6200', '#ce123a', '#00ad93', '#00aeef', '#00727d', '#ec008c', '#a60063', '#b3d4fc', '#ffb300'];
 
         - for (var i = 0; i < rowCount; i++) {
             div(class='b-gallery__row clearfix' + (i % 2 ? ' b-gallery__row_order_reverse' : ''))
                 .b-gallery__holder.clearfix
                     - for (var j = 0; j < 4; j++) {
-                        div(class='b-gallery__cell' + (!products[i * 4 + j + bigCellCount] ? ' b-gallery__cell_empty_yes' : ''))
-                            mixin product(products[i * 4 + j + bigCellCount])
+                        div(class='b-gallery__cell' + (!products[counter] ? ' b-gallery__cell_empty_yes' : ''))
+                            mixin product(products[counter])
+                            - counter++;
                     - }
 
-                div(class='b-gallery__cell b-gallery__cell_size_big' + (category && !i ? ' b-gallery__cell_without_border' : ''))
+                - var cls = category && !i ? ' b-gallery__cell_without_border' : (!products[counter] ? ' b-gallery__cell_empty_yes' : '');
+
+                div(class='b-gallery__cell b-gallery__cell_size_big' + cls)
                     - if (category && !i) {
                         .b-category-info(style='background-color: ' + colors[(category.name.length + category.posInMenu) % colors.length])
                             div.b-category-info__title-wrap
                                 h1.b-category-info__title=category.name
                             p.b-category-info__text!=category.description
                     - } else {
-                        mixin product(products[i - !!category], true)
+                        mixin product(products[counter], true)
+                        - counter++;
                     - }
         - }
 - }
